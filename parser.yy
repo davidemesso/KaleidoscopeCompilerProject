@@ -39,6 +39,7 @@
 # include "AST/UnaryExprAST.hh"
 # include "AST/CallExprAST.hh"
 # include "AST/ForExprAST.hh"
+# include "AST/PrintAST.hh"
 }
 
 %define api.token.prefix {TOK_}
@@ -69,6 +70,7 @@
   FOR        "for"
   IN         "in"
   ENDFOR     "end"
+  PRINT      "print"
 ;
 
 %token <std::string> IDENTIFIER "id"
@@ -86,6 +88,7 @@
 %type <PrototypeAST*> external
 %type <PrototypeAST*> proto
 %type <std::vector<std::string>> idseq
+%type <ExprAST*> print
 
 %right ":"
 %left "<" ">" EQ NE LE GE
@@ -148,6 +151,7 @@ exp:
 | exp ":" exp           { $$ = new BinaryExprAST(':', $1, $3); }
 | ifexp                 { $$ = $1; }
 | forexp                { $$ = $1; }
+| print %prec PRINT     { $$ = $1; }
 ;
 
 idexp:
@@ -181,6 +185,9 @@ step:
   "," exp   { $$ = $2; }
 | %empty    { $$ = new NumberExprAST(1.f); }
 ;
+
+print:
+  PRINT "(" exp ")"     { $$ = new PrintAST($3); }
 %%
 
 void

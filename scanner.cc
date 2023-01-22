@@ -2200,6 +2200,8 @@ yy::parser::symbol_type check_keywords(std::string lexeme, yy::location& loc)  {
      return yy::parser::make_IN(loc);
    else if (lexeme == "end")
      return yy::parser::make_ENDFOR(loc);
+   else if (lexeme == "print")
+     return yy::parser::make_PRINT(loc);
    else
      return yy::parser::make_IDENTIFIER (yytext, loc);
 }

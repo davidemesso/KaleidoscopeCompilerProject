@@ -651,6 +651,7 @@ namespace yy {
       // ifexp
       // forexp
       // step
+      // print
       char dummy1[sizeof (ExprAST*)];
 
       // definition
@@ -752,8 +753,9 @@ namespace yy {
     TOK_FOR = 280,                 // "for"
     TOK_IN = 281,                  // "in"
     TOK_ENDFOR = 282,              // "end"
-    TOK_IDENTIFIER = 283,          // "id"
-    TOK_NUMBER = 284               // "number"
+    TOK_PRINT = 283,               // "print"
+    TOK_IDENTIFIER = 284,          // "id"
+    TOK_NUMBER = 285               // "number"
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -770,7 +772,7 @@ namespace yy {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 30, ///< Number of tokens.
+        YYNTOKENS = 31, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -800,23 +802,25 @@ namespace yy {
         S_FOR = 25,                              // "for"
         S_IN = 26,                               // "in"
         S_ENDFOR = 27,                           // "end"
-        S_IDENTIFIER = 28,                       // "id"
-        S_NUMBER = 29,                           // "number"
-        S_YYACCEPT = 30,                         // $accept
-        S_startsymb = 31,                        // startsymb
-        S_program = 32,                          // program
-        S_top = 33,                              // top
-        S_definition = 34,                       // definition
-        S_external = 35,                         // external
-        S_proto = 36,                            // proto
-        S_idseq = 37,                            // idseq
-        S_exp = 38,                              // exp
-        S_idexp = 39,                            // idexp
-        S_optexp = 40,                           // optexp
-        S_explist = 41,                          // explist
-        S_ifexp = 42,                            // ifexp
-        S_forexp = 43,                           // forexp
-        S_step = 44                              // step
+        S_PRINT = 28,                            // "print"
+        S_IDENTIFIER = 29,                       // "id"
+        S_NUMBER = 30,                           // "number"
+        S_YYACCEPT = 31,                         // $accept
+        S_startsymb = 32,                        // startsymb
+        S_program = 33,                          // program
+        S_top = 34,                              // top
+        S_definition = 35,                       // definition
+        S_external = 36,                         // external
+        S_proto = 37,                            // proto
+        S_idseq = 38,                            // idseq
+        S_exp = 39,                              // exp
+        S_idexp = 40,                            // idexp
+        S_optexp = 41,                           // optexp
+        S_explist = 42,                          // explist
+        S_ifexp = 43,                            // ifexp
+        S_forexp = 44,                           // forexp
+        S_step = 45,                             // step
+        S_print = 46                             // print
       };
     };
 
@@ -858,6 +862,7 @@ namespace yy {
       case symbol_kind::S_ifexp: // ifexp
       case symbol_kind::S_forexp: // forexp
       case symbol_kind::S_step: // step
+      case symbol_kind::S_print: // print
         value.move< ExprAST* > (std::move (that.value));
         break;
 
@@ -1054,6 +1059,7 @@ switch (yykind)
       case symbol_kind::S_ifexp: // ifexp
       case symbol_kind::S_forexp: // forexp
       case symbol_kind::S_step: // step
+      case symbol_kind::S_print: // print
         value.template destroy< ExprAST* > ();
         break;
 
@@ -1183,7 +1189,7 @@ switch (yykind)
 #endif
       {
         YY_ASSERT (tok == token::TOK_END
-                   || (token::TOK_YYerror <= tok && tok <= token::TOK_ENDFOR));
+                   || (token::TOK_YYerror <= tok && tok <= token::TOK_PRINT));
       }
 #if 201103L <= YY_CPLUSPLUS
       symbol_type (int tok, double v, location_type l)
@@ -1676,6 +1682,21 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_PRINT (location_type l)
+      {
+        return symbol_type (token::TOK_PRINT, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_PRINT (const location_type& l)
+      {
+        return symbol_type (token::TOK_PRINT, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_IDENTIFIER (std::string v, location_type l)
       {
         return symbol_type (token::TOK_IDENTIFIER, std::move (v), std::move (l));
@@ -2033,9 +2054,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 238,     ///< Last index in yytable_.
-      yynnts_ = 15,  ///< Number of nonterminal symbols.
-      yyfinal_ = 27 ///< Termination state number.
+      yylast_ = 236,     ///< Last index in yytable_.
+      yynnts_ = 16,  ///< Number of nonterminal symbols.
+      yyfinal_ = 30 ///< Termination state number.
     };
 
 
@@ -2082,10 +2103,10 @@ switch (yykind)
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29
+      25,    26,    27,    28,    29,    30
     };
     // Last valid token kind.
-    const int code_max = 284;
+    const int code_max = 285;
 
     if (t <= 0)
       return symbol_kind::S_YYEOF;
@@ -2109,6 +2130,7 @@ switch (yykind)
       case symbol_kind::S_ifexp: // ifexp
       case symbol_kind::S_forexp: // forexp
       case symbol_kind::S_step: // step
+      case symbol_kind::S_print: // print
         value.copy< ExprAST* > (YY_MOVE (that.value));
         break;
 
@@ -2177,6 +2199,7 @@ switch (yykind)
       case symbol_kind::S_ifexp: // ifexp
       case symbol_kind::S_forexp: // forexp
       case symbol_kind::S_step: // step
+      case symbol_kind::S_print: // print
         value.move< ExprAST* > (YY_MOVE (s.value));
         break;
 
@@ -2273,7 +2296,7 @@ switch (yykind)
   }
 
 } // yy
-#line 2277 "parser.hh"
+#line 2300 "parser.hh"
 
 
 

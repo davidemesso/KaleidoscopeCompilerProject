@@ -36,6 +36,7 @@
 # include "AST/NumberExprAST.hh"
 # include "AST/VariableExprAST.hh"
 # include "AST/BinaryExprAST.hh"
+# include "AST/UnaryExprAST.hh"
 # include "AST/CallExprAST.hh"
 }
 
@@ -56,6 +57,7 @@
   NE         "!="
   LPAREN     "("
   RPAREN     ")"
+  CONCAT     ":"
   EXTERN     "extern"
   DEF        "def"
   IF         "if"
@@ -78,6 +80,7 @@
 %type <PrototypeAST*> proto
 %type <std::vector<std::string>> idseq
 
+%right ":"
 %left "<" ">" EQ NE LE GE
 %left "+" "-"
 %left "*" "/"
@@ -133,7 +136,10 @@ exp:
 | idexp                 { $$ = $1; }
 | "(" exp ")"           { $$ = $2; }
 | "number"              { $$ = new NumberExprAST($1); }
+| "-" "number"          { $$ = new UnaryExprAST('-', new NumberExprAST($2)); }
+| "-" "(" exp ")"       { $$ = new UnaryExprAST('-', $3); }
 | ifexp                 { $$ = $1; }
+| exp ":" exp           { $$ = new BinaryExprAST(':', $1, $3); }
 ;
 
 idexp:

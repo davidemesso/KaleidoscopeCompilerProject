@@ -739,14 +739,15 @@ namespace yy {
     TOK_NE = 269,                  // "!="
     TOK_LPAREN = 270,              // "("
     TOK_RPAREN = 271,              // ")"
-    TOK_EXTERN = 272,              // "extern"
-    TOK_DEF = 273,                 // "def"
-    TOK_IF = 274,                  // "if"
-    TOK_THEN = 275,                // "then"
-    TOK_ELSE = 276,                // "else"
-    TOK_FI = 277,                  // "fi"
-    TOK_IDENTIFIER = 278,          // "id"
-    TOK_NUMBER = 279               // "number"
+    TOK_CONCAT = 272,              // ":"
+    TOK_EXTERN = 273,              // "extern"
+    TOK_DEF = 274,                 // "def"
+    TOK_IF = 275,                  // "if"
+    TOK_THEN = 276,                // "then"
+    TOK_ELSE = 277,                // "else"
+    TOK_FI = 278,                  // "fi"
+    TOK_IDENTIFIER = 279,          // "id"
+    TOK_NUMBER = 280               // "number"
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -763,7 +764,7 @@ namespace yy {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 25, ///< Number of tokens.
+        YYNTOKENS = 26, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -782,27 +783,28 @@ namespace yy {
         S_NE = 14,                               // "!="
         S_LPAREN = 15,                           // "("
         S_RPAREN = 16,                           // ")"
-        S_EXTERN = 17,                           // "extern"
-        S_DEF = 18,                              // "def"
-        S_IF = 19,                               // "if"
-        S_THEN = 20,                             // "then"
-        S_ELSE = 21,                             // "else"
-        S_FI = 22,                               // "fi"
-        S_IDENTIFIER = 23,                       // "id"
-        S_NUMBER = 24,                           // "number"
-        S_YYACCEPT = 25,                         // $accept
-        S_startsymb = 26,                        // startsymb
-        S_program = 27,                          // program
-        S_top = 28,                              // top
-        S_definition = 29,                       // definition
-        S_external = 30,                         // external
-        S_proto = 31,                            // proto
-        S_idseq = 32,                            // idseq
-        S_exp = 33,                              // exp
-        S_idexp = 34,                            // idexp
-        S_optexp = 35,                           // optexp
-        S_explist = 36,                          // explist
-        S_ifexp = 37                             // ifexp
+        S_CONCAT = 17,                           // ":"
+        S_EXTERN = 18,                           // "extern"
+        S_DEF = 19,                              // "def"
+        S_IF = 20,                               // "if"
+        S_THEN = 21,                             // "then"
+        S_ELSE = 22,                             // "else"
+        S_FI = 23,                               // "fi"
+        S_IDENTIFIER = 24,                       // "id"
+        S_NUMBER = 25,                           // "number"
+        S_YYACCEPT = 26,                         // $accept
+        S_startsymb = 27,                        // startsymb
+        S_program = 28,                          // program
+        S_top = 29,                              // top
+        S_definition = 30,                       // definition
+        S_external = 31,                         // external
+        S_proto = 32,                            // proto
+        S_idseq = 33,                            // idseq
+        S_exp = 34,                              // exp
+        S_idexp = 35,                            // idexp
+        S_optexp = 36,                           // optexp
+        S_explist = 37,                          // explist
+        S_ifexp = 38                             // ifexp
       };
     };
 
@@ -1493,6 +1495,21 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_CONCAT (location_type l)
+      {
+        return symbol_type (token::TOK_CONCAT, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_CONCAT (const location_type& l)
+      {
+        return symbol_type (token::TOK_CONCAT, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_EXTERN (location_type l)
       {
         return symbol_type (token::TOK_EXTERN, std::move (l));
@@ -1680,7 +1697,7 @@ switch (yykind)
     // Tables.
     // YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
     // STATE-NUM.
-    static const signed char yypact_[];
+    static const short yypact_[];
 
     // YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
     // Performed when YYTABLE does not specify something else to do.  Zero
@@ -1940,9 +1957,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 124,     ///< Last index in yytable_.
+      yylast_ = 153,     ///< Last index in yytable_.
       yynnts_ = 13,  ///< Number of nonterminal symbols.
-      yyfinal_ = 21 ///< Termination state number.
+      yyfinal_ = 24 ///< Termination state number.
     };
 
 
@@ -1988,10 +2005,11 @@ switch (yykind)
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    21,    22,    23,    24
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
+      25
     };
     // Last valid token kind.
-    const int code_max = 279;
+    const int code_max = 280;
 
     if (t <= 0)
       return symbol_kind::S_YYEOF;
@@ -2175,7 +2193,7 @@ switch (yykind)
   }
 
 } // yy
-#line 2179 "parser.hh"
+#line 2197 "parser.hh"
 
 
 

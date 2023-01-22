@@ -72,6 +72,8 @@ Value *BinaryExprAST::codegen(driver& drv) {
       auto cond = drv.builder->CreateFCmpUNE(L, R, "compregister");
       return comparisonToFP(drv, cond);
     }
+    case ':':
+      return R;
     default:  
       LogErrorV("Operatore binario non supportato");
       return nullptr;

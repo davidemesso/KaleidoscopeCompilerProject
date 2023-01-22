@@ -60,6 +60,7 @@ blank   [ \t]
 ">="     return yy::parser::make_GE        (loc);
 "=="     return yy::parser::make_EQ        (loc);
 "!="     return yy::parser::make_NE        (loc);
+"="      return yy::parser::make_ASSIGN    (loc);
 
 {num}      {
   errno = 0;
@@ -90,6 +91,12 @@ yy::parser::symbol_type check_keywords(std::string lexeme, yy::location& loc)  {
      return yy::parser::make_ELSE(loc);
    else if (lexeme == "fi")
      return yy::parser::make_FI(loc);
+   else if (lexeme == "for")
+     return yy::parser::make_FOR(loc);
+   else if (lexeme == "in")
+     return yy::parser::make_IN(loc);
+   else if (lexeme == "end")
+     return yy::parser::make_ENDFOR(loc);
    else
      return yy::parser::make_IDENTIFIER (yytext, loc);
 }

@@ -434,8 +434,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 /* %% [3.0] code to copy yytext_ptr to yytext[] goes here, if %array \ */\
 	(yy_c_buf_p) = yy_cp;
 /* %% [4.0] data tables for the DFA and the user's section 1 definitions go here */
-#define YY_NUM_RULES 21
-#define YY_END_OF_BUFFER 22
+#define YY_NUM_RULES 22
+#define YY_END_OF_BUFFER 23
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -445,10 +445,10 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[41] =
     {   0,
-        0,    0,   22,   20,    1,    2,   20,    7,    8,    5,
-        4,   10,    3,   20,    6,   18,   18,   11,    9,   13,
-       20,   12,   19,    1,    2,   17,   18,   18,   18,    0,
-       18,   14,   16,   15,   19,   18,    0,    0,   18,    0
+        0,    0,   23,   21,    1,    2,   21,    7,    8,    5,
+        4,   10,    3,   21,    6,   19,   19,   11,    9,   13,
+       18,   12,   20,    1,    2,   17,   19,   19,   19,    0,
+       19,   14,   16,   15,   20,   19,    0,    0,   19,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -540,10 +540,11 @@ static char *yy_last_accepting_cpos;
 extern int yy_flex_debug;
 int yy_flex_debug = 1;
 
-static const flex_int16_t yy_rule_linenum[21] =
+static const flex_int16_t yy_rule_linenum[22] =
     {   0,
        46,   47,   49,   50,   51,   52,   53,   54,   55,   56,
-       57,   58,   59,   60,   61,   62,   63,   65,   73,   74
+       57,   58,   59,   60,   61,   62,   63,   64,   66,   74,
+       75
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -578,13 +579,13 @@ char *yytext;
 #endif
 
 yy::parser::symbol_type check_keywords(std::string lexeme, yy::location& loc);
-#line 582 "scanner.cc"
+#line 583 "scanner.cc"
 #define YY_NO_INPUT 1
 #line 35 "scanner.ll"
   // Code run each time a pattern is matched.
   # define YY_USER_ACTION loc.columns(yyleng);
-#line 587 "scanner.cc"
 #line 588 "scanner.cc"
+#line 589 "scanner.cc"
 
 #define INITIAL 0
 
@@ -871,7 +872,7 @@ YY_DECL
   // Code run each time yylex is called.
   loc.step ();
 
-#line 875 "scanner.cc"
+#line 876 "scanner.cc"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -925,13 +926,13 @@ do_action:	/* This label is used only to access EOF actions. */
 			{
 			if ( yy_act == 0 )
 				fprintf( stderr, "--scanner backing up\n" );
-			else if ( yy_act < 21 )
+			else if ( yy_act < 22 )
 				fprintf( stderr, "--accepting rule at line %ld (\"%s\")\n",
 				         (long)yy_rule_linenum[yy_act], yytext );
-			else if ( yy_act == 21 )
+			else if ( yy_act == 22 )
 				fprintf( stderr, "--accepting default rule (\"%s\")\n",
 				         yytext );
-			else if ( yy_act == 22 )
+			else if ( yy_act == 23 )
 				fprintf( stderr, "--(end of buffer or a NUL)\n" );
 			else
 				fprintf( stderr, "--EOF (start condition %d)\n", YY_START );
@@ -1035,7 +1036,12 @@ return yy::parser::make_NE        (loc);
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 65 "scanner.ll"
+#line 64 "scanner.ll"
+return yy::parser::make_ASSIGN    (loc);
+	YY_BREAK
+case 19:
+YY_RULE_SETUP
+#line 66 "scanner.ll"
 {
   errno = 0;
   double n = strtod(yytext, NULL);
@@ -1045,29 +1051,29 @@ YY_RULE_SETUP
   return yy::parser::make_NUMBER (n, loc);
 }
 	YY_BREAK
-case 19:
-YY_RULE_SETUP
-#line 73 "scanner.ll"
-return check_keywords(yytext, loc);
-	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 74 "scanner.ll"
+return check_keywords(yytext, loc);
+	YY_BREAK
+case 21:
+YY_RULE_SETUP
+#line 75 "scanner.ll"
 {
              throw yy::parser::syntax_error
                (loc, "invalid character: " + std::string(yytext));
 }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 78 "scanner.ll"
+#line 79 "scanner.ll"
 return yy::parser::make_END (loc);
 	YY_BREAK
-case 21:
+case 22:
 YY_RULE_SETUP
-#line 79 "scanner.ll"
+#line 80 "scanner.ll"
 ECHO;
 	YY_BREAK
-#line 1071 "scanner.cc"
+#line 1077 "scanner.cc"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2172,7 +2178,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 79 "scanner.ll"
+#line 80 "scanner.ll"
 
 
 yy::parser::symbol_type check_keywords(std::string lexeme, yy::location& loc)  {
@@ -2188,6 +2194,12 @@ yy::parser::symbol_type check_keywords(std::string lexeme, yy::location& loc)  {
      return yy::parser::make_ELSE(loc);
    else if (lexeme == "fi")
      return yy::parser::make_FI(loc);
+   else if (lexeme == "for")
+     return yy::parser::make_FOR(loc);
+   else if (lexeme == "in")
+     return yy::parser::make_IN(loc);
+   else if (lexeme == "end")
+     return yy::parser::make_ENDFOR(loc);
    else
      return yy::parser::make_IDENTIFIER (yytext, loc);
 }

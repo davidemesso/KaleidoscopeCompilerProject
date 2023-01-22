@@ -38,6 +38,7 @@
 # include "AST/BinaryExprAST.hh"
 # include "AST/UnaryExprAST.hh"
 # include "AST/CallExprAST.hh"
+# include "AST/ForExprAST.hh"
 }
 
 %define api.token.prefix {TOK_}
@@ -58,12 +59,16 @@
   LPAREN     "("
   RPAREN     ")"
   CONCAT     ":"
+  ASSIGN     "="
   EXTERN     "extern"
   DEF        "def"
   IF         "if"
   THEN       "then"
   ELSE       "else"
   FI         "fi"
+  FOR        "for"
+  IN         "in"
+  ENDFOR     "end"
 ;
 
 %token <std::string> IDENTIFIER "id"
@@ -73,6 +78,8 @@
 %type <std::vector<ExprAST*>> optexp
 %type <std::vector<ExprAST*>> explist
 %type <ExprAST*> ifexp
+%type <ExprAST*> forexp
+%type <ExprAST*> step
 %type <RootAST*> program
 %type <RootAST*> top
 %type <FunctionAST*> definition
@@ -138,8 +145,9 @@ exp:
 | "number"              { $$ = new NumberExprAST($1); }
 | "-" "number"          { $$ = new UnaryExprAST('-', new NumberExprAST($2)); }
 | "-" "(" exp ")"       { $$ = new UnaryExprAST('-', $3); }
-| ifexp                 { $$ = $1; }
 | exp ":" exp           { $$ = new BinaryExprAST(':', $1, $3); }
+| ifexp                 { $$ = $1; }
+| forexp                { $$ = $1; }
 ;
 
 idexp:
@@ -165,6 +173,14 @@ ifexp:
 /* | IF exp THEN exp FI           { $$ = new IfExprAST($2, $4, nullptr); } */
 ;
 
+forexp:
+  FOR "id" "=" exp "," exp step IN exp ENDFOR { $$ = new ForExprAST($2, $4, $6, $7, $9); }
+;
+
+step:
+  "," exp   { $$ = $2; }
+| %empty    { $$ = new NumberExprAST(1.f); }
+;
 %%
 
 void

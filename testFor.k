@@ -1,11 +1,19 @@
-def g(y)
-    for x = 0, 
-        if y <= 10
-            then y
-            else 10
-        fi,
-        2 
-    in x 
+def printIf5(x)
+    if x == 5 then print(x) else 0 fi
+;
+
+def allMultiplesUntil(x y)
+    for i = 0, 
+        i < y,
+        x
+    in 
+        printIf5(i)
     end
 ;
-g(0);
+
+
+def main() 
+    allMultiplesUntil(1, 10)
+;
+
+    

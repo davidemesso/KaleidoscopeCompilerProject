@@ -20,13 +20,13 @@ Value* PrintAST::codegen(driver &drv)
     auto CalleeF = drv.module->getOrInsertFunction(
         "printf",
         FunctionType::get(
-            IntegerType::getInt32Ty(*drv.context), 
+            IntegerType::getDoubleTy(*drv.context), 
             PointerType::get(Type::getInt8Ty(*drv.context), 0), 
             true // VarArg
         )
     );
 
-    llvm::Constant * format = drv.builder->CreateGlobalStringPtr("%f", "formatString");
+    llvm::Constant * format = drv.builder->CreateGlobalStringPtr("%f\n", "formatString");
     std::vector<Value *> ArgsV;
     ArgsV.push_back(format);
     ArgsV.push_back(Argument->codegen(drv));

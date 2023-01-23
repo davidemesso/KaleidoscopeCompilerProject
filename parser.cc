@@ -969,7 +969,7 @@ namespace yy {
 
   case 39: // ifexp: "if" exp "then" exp "else" exp "fi"
 #line 176 "parser.yy"
-                               { yylhs.value.as < ExprAST* > () = new IfExprAST(yystack_[5].value.as < ExprAST* > (), yystack_[3].value.as < ExprAST* > (), yystack_[1].value.as < ExprAST* > ()); }
+                               { yylhs.value.as < ExprAST* > () = new IfExprAST(yystack_[5].value.as < ExprAST* > (), yystack_[3].value.as < ExprAST* > (), yystack_[1].value.as < ExprAST* > ());}
 #line 974 "parser.cc"
     break;
 

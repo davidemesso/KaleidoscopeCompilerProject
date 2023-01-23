@@ -42,7 +42,7 @@ Value* IfExprAST::codegen(driver &drv)
 	// end of the function.
 	BasicBlock *thenBB  = BasicBlock::Create(*drv.context, "then", TheFunction);
 	BasicBlock *elseBB  = BasicBlock::Create(*drv.context, "else");
-	BasicBlock *mergeBB = BasicBlock::Create(*drv.context, "ifcont");
+	BasicBlock *mergeBB = BasicBlock::Create(*drv.context, "ifcond");
 
 	builder->CreateCondBr(ifCondition, thenBB, elseBB);
 

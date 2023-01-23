@@ -173,7 +173,7 @@ explist:
 ;
 
 ifexp:
-  IF exp THEN exp ELSE exp FI  { $$ = new IfExprAST($2, $4, $6); }
+  IF exp THEN exp ELSE exp FI  { $$ = new IfExprAST($2, $4, $6);}
 /* | IF exp THEN exp FI           { $$ = new IfExprAST($2, $4, nullptr); } */
 ;
 

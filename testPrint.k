@@ -1,4 +1,3 @@
 def pr(x)
-    print(x) :
-    print(3)
+    print(x)
 ;

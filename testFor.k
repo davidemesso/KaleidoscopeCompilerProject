@@ -1,11 +1,15 @@
-def g(y)
-    for x = 0, 
-        if y <= 10
-            then y
-            else 10
-        fi,
-        2 
-    in x 
+def allMultiplesUntil(x y)
+    for i = 0, 
+        i < y,
+        x
+    in 
+        if i <= 5 then print(i) else 0 fi
     end
 ;
-g(0);
+
+
+def main() 
+    allMultiplesUntil(1, 10)
+;
+
+    

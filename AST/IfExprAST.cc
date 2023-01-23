@@ -32,7 +32,7 @@ Value* IfExprAST::codegen(driver &drv)
 
 	Value* ifCondition = builder->CreateFCmpONE(
 		CondV, 
-		ConstantFP::get(*drv.context, APFloat(0.f)), 
+		ConstantFP::get(*drv.context, APFloat(0.0)), 
 		"ifcond"
 	);
 
@@ -42,7 +42,7 @@ Value* IfExprAST::codegen(driver &drv)
 	// end of the function.
 	BasicBlock *thenBB  = BasicBlock::Create(*drv.context, "then", TheFunction);
 	BasicBlock *elseBB  = BasicBlock::Create(*drv.context, "else");
-	BasicBlock *mergeBB = BasicBlock::Create(*drv.context, "ifcont");
+	BasicBlock *mergeBB = BasicBlock::Create(*drv.context, "ifcond");
 
 	builder->CreateCondBr(ifCondition, thenBB, elseBB);
 

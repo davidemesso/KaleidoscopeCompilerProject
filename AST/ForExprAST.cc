@@ -106,6 +106,5 @@ Value* ForExprAST::codegen(driver &drv)
     else
         drv.NamedValues.erase(VarName);
 
-    Value* ret = BodyVal;
-    return ret;
+    return BodyVal;
 }

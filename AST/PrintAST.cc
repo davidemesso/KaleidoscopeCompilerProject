@@ -20,7 +20,7 @@ Value* PrintAST::codegen(driver &drv)
     auto CalleeF = drv.module->getOrInsertFunction(
         "printf",
         FunctionType::get(
-            IntegerType::getDoubleTy(*drv.context), 
+            IntegerType::getInt32Ty(*drv.context), 
             PointerType::get(Type::getInt8Ty(*drv.context), 0), 
             true // VarArg
         )
@@ -31,5 +31,7 @@ Value* PrintAST::codegen(driver &drv)
     ArgsV.push_back(format);
     ArgsV.push_back(Argument->codegen(drv));
 
-    return drv.builder->CreateCall(CalleeF, ArgsV, "printfCall");
+    drv.builder->CreateCall(CalleeF, ArgsV, "printfCall");
+
+    return Constant::getNullValue(Type::getDoubleTy(*drv.context));
 }

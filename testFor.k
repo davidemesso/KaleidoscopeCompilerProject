@@ -1,13 +1,9 @@
-def printIf5(x)
-    if x == 5 then print(x) else 0 fi
-;
-
 def allMultiplesUntil(x y)
     for i = 0, 
         i < y,
         x
     in 
-        printIf5(i)
+        if i <= 5 then print(i) else 0 fi
     end
 ;
 

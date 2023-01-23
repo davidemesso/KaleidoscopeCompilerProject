@@ -32,7 +32,7 @@ Value* IfExprAST::codegen(driver &drv)
 
 	Value* ifCondition = builder->CreateFCmpONE(
 		CondV, 
-		ConstantFP::get(*drv.context, APFloat(0.f)), 
+		ConstantFP::get(*drv.context, APFloat(0.0)), 
 		"ifcond"
 	);
 

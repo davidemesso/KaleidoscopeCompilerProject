@@ -30,82 +30,82 @@ Value* ForExprAST::codegen(driver &drv)
 	if(gettop())
 		return TopExpression(this, drv);
 
-    Value *StartVal = Start->codegen(drv);
+    const auto builder = drv.builder;
+
+	Function* TheFunction = builder->GetInsertBlock()->getParent();
+
+	BasicBlock* ForHeaderBB = BasicBlock::Create(*drv.context, "for.header");
+	BasicBlock* ForBodyBB   = BasicBlock::Create(*drv.context, "for.body");
+	BasicBlock* ForLatchBB  = BasicBlock::Create(*drv.context, "latch");
+	BasicBlock* ExitBB      = BasicBlock::Create(*drv.context, "exit");
+
+    Value* StartVal = Start->codegen(drv);
     if (!StartVal)
         return nullptr;
 
-    const auto builder = drv.builder;
+    builder->CreateBr(ForHeaderBB);
+    auto InitBB = builder->GetInsertBlock();
 
-    // Make the new basic block for the loop header, inserting after current
-    // block.
-    Function *TheFunction = builder->GetInsertBlock()->getParent();
-    BasicBlock *PreheaderBB = builder->GetInsertBlock();
-    BasicBlock *LoopBB = BasicBlock::Create(*drv.context, "loop", TheFunction);
+    // Header
+    TheFunction->getBasicBlockList().insert(TheFunction->end(), ForHeaderBB);
+    builder->SetInsertPoint(ForHeaderBB);
+    PHINode* Variable = builder->CreatePHI(
+        Type::getDoubleTy(*drv.context),
+        2, 
+        VarName.c_str()
+    );
 
-    // Insert an explicit fall through from the current block to the LoopBB.
-    builder->CreateBr(LoopBB);
-
-    // Start insertion in LoopBB.
-    builder->SetInsertPoint(LoopBB);
-
-    // Start the PHI node with an entry for Start.
-    PHINode *Variable =
-        builder->CreatePHI(Type::getDoubleTy(*drv.context), 2, VarName);
-    Variable->addIncoming(StartVal, PreheaderBB);
-
-    // Within the loop, the variable is defined equal to the PHI node.  If it
-    // shadows an existing variable, we have to restore it, so save it now.
     Value *OldVal = drv.NamedValues[VarName];
     drv.NamedValues[VarName] = Variable;
 
-    // Emit the body of the loop.  This, like any other expr, can change the
-    // current BB.  Note that we ignore the value computed by the body, but don't
-    // allow an error.
-    if (!Body->codegen(drv))
-        return nullptr;
+    Variable->addIncoming(StartVal, InitBB);
+    Value *CondV = End->codegen(drv);
+	if (!CondV)
+		return nullptr;
 
-    // Emit the step value.
-    Value *StepVal = nullptr;
-    if (Step) {
-        StepVal = Step->codegen(drv);
-        if (!StepVal)
-        return nullptr;
-    } else {
-        // If not specified, use 1.0.
-        StepVal = ConstantFP::get(*drv.context, APFloat(1.0));
-    }
+	Value* EndCondition = builder->CreateFCmpONE(
+		CondV,
+		ConstantFP::get(*drv.context, APFloat(0.)),
+        "forCond"
+	);
+    builder->CreateCondBr(EndCondition, ForBodyBB, ExitBB);
+    ForHeaderBB = builder->GetInsertBlock();
 
-    Value *NextVar = builder->CreateFAdd(Variable, StepVal, "nextvar");
 
-    // Compute the end condition.
-    Value *EndCond = End->codegen(drv);
-    if (!EndCond)
-        return nullptr;
+    // Body
+    TheFunction->getBasicBlockList().insert(TheFunction->end(), ForBodyBB);
+	builder->SetInsertPoint(ForBodyBB);
 
-    // Convert condition to a bool by comparing non-equal to 0.0.
-    EndCond = builder->CreateFCmpONE(
-        EndCond, ConstantFP::get(*drv.context, APFloat(0.0)), "loopcond");
+    Value* BodyVal = Body->codegen(drv);
+	if (!BodyVal)
+		return nullptr;
+    
+    builder->CreateBr(ForLatchBB);
+    ForBodyBB = builder->GetInsertBlock();
+    
+    // Latch
+    TheFunction->getBasicBlockList().insert(TheFunction->end(), ForLatchBB);
+	builder->SetInsertPoint(ForLatchBB);
+	
+    Value* StepVal = Step->codegen(drv);
+	if (!StepVal)
+		return nullptr;
+    
+    Value* NextVal = builder->CreateFAdd(Variable, StepVal, "nextVal");
+    Variable->addIncoming(NextVal, ForLatchBB);
 
-    // Create the "after loop" block and insert it.
-    BasicBlock *LoopEndBB = builder->GetInsertBlock();
-    BasicBlock *AfterBB =
-        BasicBlock::Create(*drv.context, "afterloop", TheFunction);
-
-    // Insert the conditional branch into the end of LoopEndBB.
-    builder->CreateCondBr(EndCond, LoopBB, AfterBB);
-
-    // Any new code will be inserted in AfterBB.
-    builder->SetInsertPoint(AfterBB);
-
-    // Add a new entry to the PHI node for the backedge.
-    Variable->addIncoming(NextVar, LoopEndBB);
-
-    // Restore the unshadowed variable.
+    builder->CreateBr(ForHeaderBB);
+    ForLatchBB = builder->GetInsertBlock();
+    
+    // EXIT
+    TheFunction->getBasicBlockList().insert(TheFunction->end(), ExitBB);
+	builder->SetInsertPoint(ExitBB);
+    
     if (OldVal)
         drv.NamedValues[VarName] = OldVal;
     else
         drv.NamedValues.erase(VarName);
 
-    // for expr always returns 0.0.
-    return Constant::getNullValue(Type::getDoubleTy(*drv.context));
+    Value* ret = BodyVal;
+    return ret;
 }

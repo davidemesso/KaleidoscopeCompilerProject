@@ -3,11 +3,11 @@ def main()
         i <= 2
     in
         print(i * 10) :
-        for j = 1,
+        for j = 0,
             j <= 8,
-            2
+            1
         in
-            if j <= i * 5 then print(j) else 0 fi
+            if !(j % 2) then print(-j) else print(j) fi
         end 
     end
 ;

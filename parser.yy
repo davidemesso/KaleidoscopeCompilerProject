@@ -51,6 +51,7 @@
   PLUS       "+"
   STAR       "*"
   SLASH      "/"
+  MODULO     "%"
   GT         ">"
   LT         "<"
   GE         ">="
@@ -59,6 +60,7 @@
   NE         "!="
   LPAREN     "("
   RPAREN     ")"
+  NOT        "!"
   CONCAT     ":"
   ASSIGN     "="
   EXTERN     "extern"
@@ -92,7 +94,7 @@
 
 %right ":"
 %left "<" ">" EQ NE LE GE
-%left "+" "-"
+%left "+" "-" "%"
 %left "*" "/"
 
 %%
@@ -137,6 +139,7 @@ exp:
 | exp "-" exp           { $$ = new BinaryExprAST('-',$1,$3); }
 | exp "*" exp           { $$ = new BinaryExprAST('*',$1,$3); }
 | exp "/" exp           { $$ = new BinaryExprAST('/',$1,$3); }
+| exp "%" exp           { $$ = new BinaryExprAST('%',$1,$3); }
 | exp LE  exp %prec LE  { $$ = new BinaryExprAST('l',$1,$3); }
 | exp GE  exp %prec GE  { $$ = new BinaryExprAST('g',$1,$3); }
 | exp "<" exp           { $$ = new BinaryExprAST('<',$1,$3); }
@@ -148,6 +151,10 @@ exp:
 | "number"              { $$ = new NumberExprAST($1); }
 | "-" "number"          { $$ = new UnaryExprAST('-', new NumberExprAST($2)); }
 | "-" "(" exp ")"       { $$ = new UnaryExprAST('-', $3); }
+| "-" idexp             { $$ = new UnaryExprAST('-', $2); }
+| "!" "number"          { $$ = new UnaryExprAST('!', new NumberExprAST($2)); }
+| "!" "(" exp ")"       { $$ = new UnaryExprAST('!', $3); }
+| "!" idexp             { $$ = new UnaryExprAST('!', $2); }
 | exp ":" exp           { $$ = new BinaryExprAST(':', $1, $3); }
 | ifexp                 { $$ = $1; }
 | forexp                { $$ = $1; }

@@ -31,13 +31,15 @@ Value *BinaryExprAST::codegen(driver& drv) {
     if (!L || !R) return nullptr;
     switch (Op) {
     case '+':
-      return drv.builder->CreateFAdd(L,R,"addregister");
+      return drv.builder->CreateFAdd(L, R, "addregister");
     case '-':
-      return drv.builder->CreateFSub(L,R,"subregister");
+      return drv.builder->CreateFSub(L, R, "subregister");
     case '*':
-      return drv.builder->CreateFMul(L,R,"mulregister");
+      return drv.builder->CreateFMul(L, R, "mulregister");
     case '/':
-      return drv.builder->CreateFDiv(L,R,"divregister");
+      return drv.builder->CreateFDiv(L, R, "divregister");
+    case '%':
+      return drv.builder->CreateFRem(L, R, "remregister");
     case '<':
     {
       auto cond = drv.builder->CreateFCmpULT(L, R, "compregister");

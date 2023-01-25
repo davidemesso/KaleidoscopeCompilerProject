@@ -1,6 +1,11 @@
-def fib(n)
-    if (n <= 2)
-        then 1
-        else (fib(n-1) + fib(n-2))
+def fib(x)
+    if (x < 3) then
+        1
+    else
+        fib(x-1)+fib(x-2)
     fi
+;
+
+def main()
+    print(fib(10))
 ;

@@ -53,7 +53,7 @@ public:
   LLVMContext *context;
   Module *module;
   IRBuilder<> *builder;
-  std::map<std::string, Value *> NamedValues;
+  std::map<std::string, AllocaInst*> NamedValues;
   static inline int Cnt=0; //Contatore incrementale, per identificare registri SSA
   RootAST* root;      // A fine parsing "punta" alla radice dell'AST
   int parse (const std::string& f);
@@ -68,5 +68,6 @@ public:
 };
 
 Value* TopExpression(ExprAST* E, driver& drv);
+AllocaInst *CreateEntryBlockAlloca(driver& drv, Function *TheFunction, const std::string &VarName);
 
 #endif // ! DRIVER_HH

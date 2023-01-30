@@ -4,7 +4,7 @@
 #include "ExprAST.hh"
 #include <string>
 
-/// VariableExprAST - Classe per la rappresentazione di riferimenti a variabili
+/// VarExprAST - Classe per i blocchi var in
 class VarExprAST : public ExprAST {
 private:
   std::vector<std::pair<std::string, ExprAST*>> VarNames;

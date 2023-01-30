@@ -53,11 +53,9 @@
   class ExprAST;
   class driver;
   class FunctionAST;
-  class SeqAST;
   class PrototypeAST;
-  class IfExprAST;
 
-#line 61 "parser.hh"
+#line 59 "parser.hh"
 
 # include <cassert>
 # include <cstdlib> // std::abort
@@ -191,7 +189,7 @@
 #endif
 
 namespace yy {
-#line 195 "parser.hh"
+#line 193 "parser.hh"
 
 
   /// A point in a source file.
@@ -651,6 +649,7 @@ namespace yy {
       // ifexp
       // forexp
       // step
+      // whilexp
       // print
       // varexp
       // assignment
@@ -764,8 +763,9 @@ namespace yy {
     TOK_ENDKW = 283,               // "end"
     TOK_PRINT = 284,               // "print"
     TOK_VAR = 285,                 // "var"
-    TOK_IDENTIFIER = 286,          // "id"
-    TOK_NUMBER = 287               // "number"
+    TOK_WHILE = 286,               // "while"
+    TOK_IDENTIFIER = 287,          // "id"
+    TOK_NUMBER = 288               // "number"
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -782,7 +782,7 @@ namespace yy {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 33, ///< Number of tokens.
+        YYNTOKENS = 34, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -815,28 +815,30 @@ namespace yy {
         S_ENDKW = 28,                            // "end"
         S_PRINT = 29,                            // "print"
         S_VAR = 30,                              // "var"
-        S_IDENTIFIER = 31,                       // "id"
-        S_NUMBER = 32,                           // "number"
-        S_YYACCEPT = 33,                         // $accept
-        S_startsymb = 34,                        // startsymb
-        S_program = 35,                          // program
-        S_top = 36,                              // top
-        S_definition = 37,                       // definition
-        S_external = 38,                         // external
-        S_proto = 39,                            // proto
-        S_idseq = 40,                            // idseq
-        S_exp = 41,                              // exp
-        S_idexp = 42,                            // idexp
-        S_optexp = 43,                           // optexp
-        S_explist = 44,                          // explist
-        S_ifexp = 45,                            // ifexp
-        S_forexp = 46,                           // forexp
-        S_step = 47,                             // step
-        S_print = 48,                            // print
-        S_varexp = 49,                           // varexp
-        S_varlist = 50,                          // varlist
-        S_pair = 51,                             // pair
-        S_assignment = 52                        // assignment
+        S_WHILE = 31,                            // "while"
+        S_IDENTIFIER = 32,                       // "id"
+        S_NUMBER = 33,                           // "number"
+        S_YYACCEPT = 34,                         // $accept
+        S_startsymb = 35,                        // startsymb
+        S_program = 36,                          // program
+        S_top = 37,                              // top
+        S_definition = 38,                       // definition
+        S_external = 39,                         // external
+        S_proto = 40,                            // proto
+        S_idseq = 41,                            // idseq
+        S_exp = 42,                              // exp
+        S_idexp = 43,                            // idexp
+        S_optexp = 44,                           // optexp
+        S_explist = 45,                          // explist
+        S_ifexp = 46,                            // ifexp
+        S_forexp = 47,                           // forexp
+        S_step = 48,                             // step
+        S_whilexp = 49,                          // whilexp
+        S_print = 50,                            // print
+        S_varexp = 51,                           // varexp
+        S_varlist = 52,                          // varlist
+        S_pair = 53,                             // pair
+        S_assignment = 54                        // assignment
       };
     };
 
@@ -878,6 +880,7 @@ namespace yy {
       case symbol_kind::S_ifexp: // ifexp
       case symbol_kind::S_forexp: // forexp
       case symbol_kind::S_step: // step
+      case symbol_kind::S_whilexp: // whilexp
       case symbol_kind::S_print: // print
       case symbol_kind::S_varexp: // varexp
       case symbol_kind::S_assignment: // assignment
@@ -1113,6 +1116,7 @@ switch (yykind)
       case symbol_kind::S_ifexp: // ifexp
       case symbol_kind::S_forexp: // forexp
       case symbol_kind::S_step: // step
+      case symbol_kind::S_whilexp: // whilexp
       case symbol_kind::S_print: // print
       case symbol_kind::S_varexp: // varexp
       case symbol_kind::S_assignment: // assignment
@@ -1253,7 +1257,7 @@ switch (yykind)
 #endif
       {
         YY_ASSERT (tok == token::TOK_END
-                   || (token::TOK_YYerror <= tok && tok <= token::TOK_VAR));
+                   || (token::TOK_YYerror <= tok && tok <= token::TOK_WHILE));
       }
 #if 201103L <= YY_CPLUSPLUS
       symbol_type (int tok, double v, location_type l)
@@ -1791,6 +1795,21 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_WHILE (location_type l)
+      {
+        return symbol_type (token::TOK_WHILE, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_WHILE (const location_type& l)
+      {
+        return symbol_type (token::TOK_WHILE, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_IDENTIFIER (std::string v, location_type l)
       {
         return symbol_type (token::TOK_IDENTIFIER, std::move (v), std::move (l));
@@ -2148,9 +2167,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 338,     ///< Last index in yytable_.
-      yynnts_ = 20,  ///< Number of nonterminal symbols.
-      yyfinal_ = 43 ///< Termination state number.
+      yylast_ = 391,     ///< Last index in yytable_.
+      yynnts_ = 21,  ///< Number of nonterminal symbols.
+      yyfinal_ = 46 ///< Termination state number.
     };
 
 
@@ -2197,10 +2216,10 @@ switch (yykind)
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30,    31,    32
+      25,    26,    27,    28,    29,    30,    31,    32,    33
     };
     // Last valid token kind.
-    const int code_max = 287;
+    const int code_max = 288;
 
     if (t <= 0)
       return symbol_kind::S_YYEOF;
@@ -2224,6 +2243,7 @@ switch (yykind)
       case symbol_kind::S_ifexp: // ifexp
       case symbol_kind::S_forexp: // forexp
       case symbol_kind::S_step: // step
+      case symbol_kind::S_whilexp: // whilexp
       case symbol_kind::S_print: // print
       case symbol_kind::S_varexp: // varexp
       case symbol_kind::S_assignment: // assignment
@@ -2303,6 +2323,7 @@ switch (yykind)
       case symbol_kind::S_ifexp: // ifexp
       case symbol_kind::S_forexp: // forexp
       case symbol_kind::S_step: // step
+      case symbol_kind::S_whilexp: // whilexp
       case symbol_kind::S_print: // print
       case symbol_kind::S_varexp: // varexp
       case symbol_kind::S_assignment: // assignment
@@ -2410,7 +2431,7 @@ switch (yykind)
   }
 
 } // yy
-#line 2414 "parser.hh"
+#line 2435 "parser.hh"
 
 
 

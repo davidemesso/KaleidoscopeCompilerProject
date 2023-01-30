@@ -3,7 +3,7 @@
 
 #include "ExprAST.hh"
 
-/// IfExpAst - Classe che rappresenta la definizione di un for
+/// ForExpAst - Classe che rappresenta la definizione di un for
 class ForExprAST : public ExprAST {
 private:
     std::string VarName;

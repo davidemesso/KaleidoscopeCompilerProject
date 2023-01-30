@@ -2213,6 +2213,8 @@ yy::parser::symbol_type check_keywords(std::string lexeme, yy::location& loc)  {
      return yy::parser::make_PRINT(loc);
    else if (lexeme == "var")
      return yy::parser::make_VAR(loc);
+   else if (lexeme == "while")
+     return yy::parser::make_WHILE(loc);
    else
      return yy::parser::make_IDENTIFIER (yytext, loc);
 }

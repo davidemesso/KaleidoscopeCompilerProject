@@ -652,6 +652,8 @@ namespace yy {
       // forexp
       // step
       // print
+      // varexp
+      // assignment
       char dummy1[sizeof (ExprAST*)];
 
       // definition
@@ -668,15 +670,21 @@ namespace yy {
       // "number"
       char dummy5[sizeof (double)];
 
+      // pair
+      char dummy6[sizeof (std::pair<std::string,ExprAST*>)];
+
       // "id"
-      char dummy6[sizeof (std::string)];
+      char dummy7[sizeof (std::string)];
 
       // optexp
       // explist
-      char dummy7[sizeof (std::vector<ExprAST*>)];
+      char dummy8[sizeof (std::vector<ExprAST*>)];
+
+      // varlist
+      char dummy9[sizeof (std::vector<std::pair<std::string, ExprAST*>>)];
 
       // idseq
-      char dummy8[sizeof (std::vector<std::string>)];
+      char dummy10[sizeof (std::vector<std::string>)];
     };
 
     /// The size of the largest semantic type.
@@ -751,11 +759,11 @@ namespace yy {
     TOK_IF = 278,                  // "if"
     TOK_THEN = 279,                // "then"
     TOK_ELSE = 280,                // "else"
-    TOK_FI = 281,                  // "fi"
-    TOK_FOR = 282,                 // "for"
-    TOK_IN = 283,                  // "in"
-    TOK_ENDFOR = 284,              // "end"
-    TOK_PRINT = 285,               // "print"
+    TOK_FOR = 281,                 // "for"
+    TOK_IN = 282,                  // "in"
+    TOK_ENDKW = 283,               // "end"
+    TOK_PRINT = 284,               // "print"
+    TOK_VAR = 285,                 // "var"
     TOK_IDENTIFIER = 286,          // "id"
     TOK_NUMBER = 287               // "number"
       };
@@ -802,11 +810,11 @@ namespace yy {
         S_IF = 23,                               // "if"
         S_THEN = 24,                             // "then"
         S_ELSE = 25,                             // "else"
-        S_FI = 26,                               // "fi"
-        S_FOR = 27,                              // "for"
-        S_IN = 28,                               // "in"
-        S_ENDFOR = 29,                           // "end"
-        S_PRINT = 30,                            // "print"
+        S_FOR = 26,                              // "for"
+        S_IN = 27,                               // "in"
+        S_ENDKW = 28,                            // "end"
+        S_PRINT = 29,                            // "print"
+        S_VAR = 30,                              // "var"
         S_IDENTIFIER = 31,                       // "id"
         S_NUMBER = 32,                           // "number"
         S_YYACCEPT = 33,                         // $accept
@@ -824,7 +832,11 @@ namespace yy {
         S_ifexp = 45,                            // ifexp
         S_forexp = 46,                           // forexp
         S_step = 47,                             // step
-        S_print = 48                             // print
+        S_print = 48,                            // print
+        S_varexp = 49,                           // varexp
+        S_varlist = 50,                          // varlist
+        S_pair = 51,                             // pair
+        S_assignment = 52                        // assignment
       };
     };
 
@@ -867,6 +879,8 @@ namespace yy {
       case symbol_kind::S_forexp: // forexp
       case symbol_kind::S_step: // step
       case symbol_kind::S_print: // print
+      case symbol_kind::S_varexp: // varexp
+      case symbol_kind::S_assignment: // assignment
         value.move< ExprAST* > (std::move (that.value));
         break;
 
@@ -888,6 +902,10 @@ namespace yy {
         value.move< double > (std::move (that.value));
         break;
 
+      case symbol_kind::S_pair: // pair
+        value.move< std::pair<std::string,ExprAST*> > (std::move (that.value));
+        break;
+
       case symbol_kind::S_IDENTIFIER: // "id"
         value.move< std::string > (std::move (that.value));
         break;
@@ -895,6 +913,10 @@ namespace yy {
       case symbol_kind::S_optexp: // optexp
       case symbol_kind::S_explist: // explist
         value.move< std::vector<ExprAST*> > (std::move (that.value));
+        break;
+
+      case symbol_kind::S_varlist: // varlist
+        value.move< std::vector<std::pair<std::string, ExprAST*>> > (std::move (that.value));
         break;
 
       case symbol_kind::S_idseq: // idseq
@@ -995,6 +1017,20 @@ namespace yy {
 #endif
 
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, std::pair<std::string,ExprAST*>&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const std::pair<std::string,ExprAST*>& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, std::string&& v, location_type&& l)
         : Base (t)
         , value (std::move (v))
@@ -1016,6 +1052,20 @@ namespace yy {
       {}
 #else
       basic_symbol (typename Base::kind_type t, const std::vector<ExprAST*>& v, const location_type& l)
+        : Base (t)
+        , value (v)
+        , location (l)
+      {}
+#endif
+
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, std::vector<std::pair<std::string, ExprAST*>>&& v, location_type&& l)
+        : Base (t)
+        , value (std::move (v))
+        , location (std::move (l))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const std::vector<std::pair<std::string, ExprAST*>>& v, const location_type& l)
         : Base (t)
         , value (v)
         , location (l)
@@ -1064,6 +1114,8 @@ switch (yykind)
       case symbol_kind::S_forexp: // forexp
       case symbol_kind::S_step: // step
       case symbol_kind::S_print: // print
+      case symbol_kind::S_varexp: // varexp
+      case symbol_kind::S_assignment: // assignment
         value.template destroy< ExprAST* > ();
         break;
 
@@ -1085,6 +1137,10 @@ switch (yykind)
         value.template destroy< double > ();
         break;
 
+      case symbol_kind::S_pair: // pair
+        value.template destroy< std::pair<std::string,ExprAST*> > ();
+        break;
+
       case symbol_kind::S_IDENTIFIER: // "id"
         value.template destroy< std::string > ();
         break;
@@ -1092,6 +1148,10 @@ switch (yykind)
       case symbol_kind::S_optexp: // optexp
       case symbol_kind::S_explist: // explist
         value.template destroy< std::vector<ExprAST*> > ();
+        break;
+
+      case symbol_kind::S_varlist: // varlist
+        value.template destroy< std::vector<std::pair<std::string, ExprAST*>> > ();
         break;
 
       case symbol_kind::S_idseq: // idseq
@@ -1193,7 +1253,7 @@ switch (yykind)
 #endif
       {
         YY_ASSERT (tok == token::TOK_END
-                   || (token::TOK_YYerror <= tok && tok <= token::TOK_PRINT));
+                   || (token::TOK_YYerror <= tok && tok <= token::TOK_VAR));
       }
 #if 201103L <= YY_CPLUSPLUS
       symbol_type (int tok, double v, location_type l)
@@ -1656,21 +1716,6 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_FI (location_type l)
-      {
-        return symbol_type (token::TOK_FI, std::move (l));
-      }
-#else
-      static
-      symbol_type
-      make_FI (const location_type& l)
-      {
-        return symbol_type (token::TOK_FI, l);
-      }
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      static
-      symbol_type
       make_FOR (location_type l)
       {
         return symbol_type (token::TOK_FOR, std::move (l));
@@ -1701,16 +1746,16 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_ENDFOR (location_type l)
+      make_ENDKW (location_type l)
       {
-        return symbol_type (token::TOK_ENDFOR, std::move (l));
+        return symbol_type (token::TOK_ENDKW, std::move (l));
       }
 #else
       static
       symbol_type
-      make_ENDFOR (const location_type& l)
+      make_ENDKW (const location_type& l)
       {
-        return symbol_type (token::TOK_ENDFOR, l);
+        return symbol_type (token::TOK_ENDKW, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -1726,6 +1771,21 @@ switch (yykind)
       make_PRINT (const location_type& l)
       {
         return symbol_type (token::TOK_PRINT, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_VAR (location_type l)
+      {
+        return symbol_type (token::TOK_VAR, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_VAR (const location_type& l)
+      {
+        return symbol_type (token::TOK_VAR, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -2088,9 +2148,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 277,     ///< Last index in yytable_.
-      yynnts_ = 16,  ///< Number of nonterminal symbols.
-      yyfinal_ = 35 ///< Termination state number.
+      yylast_ = 338,     ///< Last index in yytable_.
+      yynnts_ = 20,  ///< Number of nonterminal symbols.
+      yyfinal_ = 43 ///< Termination state number.
     };
 
 
@@ -2165,6 +2225,8 @@ switch (yykind)
       case symbol_kind::S_forexp: // forexp
       case symbol_kind::S_step: // step
       case symbol_kind::S_print: // print
+      case symbol_kind::S_varexp: // varexp
+      case symbol_kind::S_assignment: // assignment
         value.copy< ExprAST* > (YY_MOVE (that.value));
         break;
 
@@ -2186,6 +2248,10 @@ switch (yykind)
         value.copy< double > (YY_MOVE (that.value));
         break;
 
+      case symbol_kind::S_pair: // pair
+        value.copy< std::pair<std::string,ExprAST*> > (YY_MOVE (that.value));
+        break;
+
       case symbol_kind::S_IDENTIFIER: // "id"
         value.copy< std::string > (YY_MOVE (that.value));
         break;
@@ -2193,6 +2259,10 @@ switch (yykind)
       case symbol_kind::S_optexp: // optexp
       case symbol_kind::S_explist: // explist
         value.copy< std::vector<ExprAST*> > (YY_MOVE (that.value));
+        break;
+
+      case symbol_kind::S_varlist: // varlist
+        value.copy< std::vector<std::pair<std::string, ExprAST*>> > (YY_MOVE (that.value));
         break;
 
       case symbol_kind::S_idseq: // idseq
@@ -2234,6 +2304,8 @@ switch (yykind)
       case symbol_kind::S_forexp: // forexp
       case symbol_kind::S_step: // step
       case symbol_kind::S_print: // print
+      case symbol_kind::S_varexp: // varexp
+      case symbol_kind::S_assignment: // assignment
         value.move< ExprAST* > (YY_MOVE (s.value));
         break;
 
@@ -2255,6 +2327,10 @@ switch (yykind)
         value.move< double > (YY_MOVE (s.value));
         break;
 
+      case symbol_kind::S_pair: // pair
+        value.move< std::pair<std::string,ExprAST*> > (YY_MOVE (s.value));
+        break;
+
       case symbol_kind::S_IDENTIFIER: // "id"
         value.move< std::string > (YY_MOVE (s.value));
         break;
@@ -2262,6 +2338,10 @@ switch (yykind)
       case symbol_kind::S_optexp: // optexp
       case symbol_kind::S_explist: // explist
         value.move< std::vector<ExprAST*> > (YY_MOVE (s.value));
+        break;
+
+      case symbol_kind::S_varlist: // varlist
+        value.move< std::vector<std::pair<std::string, ExprAST*>> > (YY_MOVE (s.value));
         break;
 
       case symbol_kind::S_idseq: // idseq
@@ -2330,7 +2410,7 @@ switch (yykind)
   }
 
 } // yy
-#line 2334 "parser.hh"
+#line 2414 "parser.hh"
 
 
 

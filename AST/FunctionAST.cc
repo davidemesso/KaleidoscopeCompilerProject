@@ -39,7 +39,11 @@ Function *FunctionAST::codegen(driver& drv) {
   // Registra gli argomenti nella symbol table
   drv.NamedValues.clear();
   for (auto &Arg : TheFunction->args())
-    drv.NamedValues[std::string(Arg.getName())] = &Arg;
+  {
+    AllocaInst *Alloca = CreateEntryBlockAlloca(drv, TheFunction, std::string(Arg.getName()));
+    drv.builder->CreateStore(&Arg, Alloca);
+    drv.NamedValues[std::string(Arg.getName())] = Alloca;
+  }
 
   if (Value *RetVal = Body->codegen(drv)) {
     // Termina la creazione del codice corrispondente alla funzione

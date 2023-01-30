@@ -34,6 +34,8 @@ Value* ForExprAST::codegen(driver &drv)
 
 	Function* TheFunction = builder->GetInsertBlock()->getParent();
 
+    AllocaInst *Alloca = CreateEntryBlockAlloca(drv, TheFunction, VarName);
+
 	BasicBlock* ForHeaderBB = BasicBlock::Create(*drv.context, "for.header");
 	BasicBlock* ForBodyBB   = BasicBlock::Create(*drv.context, "for.body");
 	BasicBlock* ForLatchBB  = BasicBlock::Create(*drv.context, "latch");
@@ -43,22 +45,18 @@ Value* ForExprAST::codegen(driver &drv)
     if (!StartVal)
         return nullptr;
 
+    builder->CreateStore(StartVal, Alloca);
+
     builder->CreateBr(ForHeaderBB);
     auto InitBB = builder->GetInsertBlock();
 
     // Header
     TheFunction->getBasicBlockList().insert(TheFunction->end(), ForHeaderBB);
     builder->SetInsertPoint(ForHeaderBB);
-    PHINode* Variable = builder->CreatePHI(
-        Type::getDoubleTy(*drv.context),
-        2, 
-        VarName.c_str()
-    );
 
-    Value *OldVal = drv.NamedValues[VarName];
-    drv.NamedValues[VarName] = Variable;
+    AllocaInst* OldVal = drv.NamedValues[VarName];
+    drv.NamedValues[VarName] = Alloca;
 
-    Variable->addIncoming(StartVal, InitBB);
     Value *CondV = End->codegen(drv);
 	if (!CondV)
 		return nullptr;
@@ -91,8 +89,9 @@ Value* ForExprAST::codegen(driver &drv)
 	if (!StepVal)
 		return nullptr;
     
-    Value* NextVal = builder->CreateFAdd(Variable, StepVal, "nextVal");
-    Variable->addIncoming(NextVal, ForLatchBB);
+    Value *CurVar = builder->CreateLoad(Alloca);
+    Value* NextVal = builder->CreateFAdd(CurVar, StepVal, "nextVal");
+    builder->CreateStore(NextVal, Alloca);
 
     builder->CreateBr(ForHeaderBB);
     ForLatchBB = builder->GetInsertBlock();

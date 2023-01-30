@@ -1,7 +1,7 @@
 def printFibonacciNumbers(n)
     var f1, 
         f2 = 1,
-        next,
+        next
     in
         if (n < 1)
         then

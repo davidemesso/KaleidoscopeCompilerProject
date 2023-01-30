@@ -7,5 +7,5 @@ def fib(x)
 ;
 
 def main()
-    print(fib(10))
+    print(fib(20))
 ;

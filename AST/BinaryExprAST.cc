@@ -1,4 +1,5 @@
 #include "BinaryExprAST.hh"
+#include "VariableExprAST.hh"
 #include "Utils/LogError.hh"
 
 // Helper function
@@ -23,13 +24,38 @@ void BinaryExprAST::visit() {
 };
 
 Value *BinaryExprAST::codegen(driver& drv) {
-  if (gettop()) {
+  if (gettop())
     return TopExpression(this, drv);
-  } else {
-    Value *L = LHS->codegen(drv);
-    Value *R = RHS->codegen(drv);
-    if (!L || !R) return nullptr;
-    switch (Op) {
+
+  if (Op == '=') 
+  {
+    VariableExprAST* LHSE = dynamic_cast<VariableExprAST *>(LHS);
+    if (!LHSE)
+    {
+      LogErrorV("destination of '=' must be a variable");
+      return nullptr;
+    }
+    // Codegen the RHS.
+    Value *Val = RHS->codegen(drv);
+    if (!Val)
+      return nullptr;
+
+    // Look up the name.
+    Value *Variable = drv.NamedValues[LHSE->getName()];
+    if (!Variable)
+    {
+      LogErrorV("Unknown variable name");
+      return nullptr;
+    }
+
+    drv.builder->CreateStore(Val, Variable);
+    return Val;
+  }
+
+  Value *L = LHS->codegen(drv);
+  Value *R = RHS->codegen(drv);
+  if (!L || !R) return nullptr;
+  switch (Op) {
     case '+':
       return drv.builder->CreateFAdd(L, R, "addregister");
     case '-':
@@ -64,7 +90,7 @@ Value *BinaryExprAST::codegen(driver& drv) {
       auto cond = drv.builder->CreateFCmpULE(L, R, "compregister");
       return comparisonToFP(drv, cond);
     }
-    case '=':
+    case 'e':
     {
       auto cond = drv.builder->CreateFCmpUEQ(L, R, "compregister");
       return comparisonToFP(drv, cond);
@@ -79,6 +105,5 @@ Value *BinaryExprAST::codegen(driver& drv) {
     default:  
       LogErrorV("Operatore binario non supportato");
       return nullptr;
-    }
   }
 };

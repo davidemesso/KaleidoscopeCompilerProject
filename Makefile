@@ -2,8 +2,8 @@
 
 all: kfe
 
-kfe: driver.o parser.o scanner.o kfe.o ifExprAST.o seqAST.o functionAST.o prototypeAST.o exprAST.o numberExprAST.o variableExprAST.o binaryExprAST.o unaryExprAST.o callExprAST.o forExprAST.o printAST.o
-	clang++ -o kfe driver.o parser.o scanner.o kfe.o ifExprAST.o seqAST.o functionAST.o exprAST.o numberExprAST.o prototypeAST.o variableExprAST.o binaryExprAST.o unaryExprAST.o callExprAST.o forExprAST.o printAST.o `llvm-config --cxxflags --ldflags --libs --libfiles --system-libs` 
+kfe: driver.o parser.o scanner.o kfe.o ifExprAST.o seqAST.o functionAST.o prototypeAST.o exprAST.o numberExprAST.o variableExprAST.o binaryExprAST.o unaryExprAST.o callExprAST.o forExprAST.o printAST.o varExprAST.o
+	clang++ -o kfe driver.o parser.o scanner.o kfe.o ifExprAST.o seqAST.o functionAST.o exprAST.o numberExprAST.o prototypeAST.o variableExprAST.o binaryExprAST.o unaryExprAST.o callExprAST.o forExprAST.o printAST.o varExprAST.o `llvm-config --cxxflags --ldflags --libs --libfiles --system-libs` 
 
 kfe.o: kfe.cc driver.hh ./AST/Utils/LogError.hh
 	clang++ -c kfe.cc -I/usr/lib/llvm-11/include -std=c++17 -fno-exceptions -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS
@@ -52,6 +52,9 @@ forExprAST.o: ./AST/ForExprAST.cc ./AST/ForExprAST.hh
 	
 printAST.o: ./AST/PrintAST.cc ./AST/PrintAST.hh 
 	clang++ -c ./AST/PrintAST.cc -I/usr/lib/llvm-11/include -std=c++17 -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS 
+	
+varExprAST.o: ./AST/VarExprAST.cc ./AST/VarExprAST.hh 
+	clang++ -c ./AST/VarExprAST.cc -I/usr/lib/llvm-11/include -std=c++17 -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS 
 	
 parser.cc, parser.hh: parser.yy 
 	bison -o parser.cc parser.yy -Wcounterexamples

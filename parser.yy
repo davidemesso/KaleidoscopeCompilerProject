@@ -40,6 +40,7 @@
 # include "AST/CallExprAST.hh"
 # include "AST/ForExprAST.hh"
 # include "AST/PrintAST.hh"
+# include "AST/VarExprAST.hh"
 }
 
 %define api.token.prefix {TOK_}
@@ -68,11 +69,11 @@
   IF         "if"
   THEN       "then"
   ELSE       "else"
-  FI         "fi"
   FOR        "for"
   IN         "in"
-  ENDFOR     "end"
+  ENDKW      "end"
   PRINT      "print"
+  VAR        "var"
 ;
 
 %token <std::string> IDENTIFIER "id"
@@ -91,8 +92,13 @@
 %type <PrototypeAST*> proto
 %type <std::vector<std::string>> idseq
 %type <ExprAST*> print
+%type <ExprAST*> varexp
+%type <ExprAST*> assignment
+%type <std::pair<std::string,ExprAST*>> pair
+%type <std::vector<std::pair<std::string, ExprAST*>>> varlist
 
 %right ":"
+%left "="
 %left "<" ">" EQ NE LE GE
 %left "+" "-" "%"
 %left "*" "/"
@@ -144,7 +150,7 @@ exp:
 | exp GE  exp %prec GE  { $$ = new BinaryExprAST('g',$1,$3); }
 | exp "<" exp           { $$ = new BinaryExprAST('<',$1,$3); }
 | exp ">" exp           { $$ = new BinaryExprAST('>',$1,$3); }
-| exp EQ exp            { $$ = new BinaryExprAST('=',$1,$3); }
+| exp EQ exp            { $$ = new BinaryExprAST('e',$1,$3); }
 | exp NE exp            { $$ = new BinaryExprAST('!',$1,$3); }
 | idexp                 { $$ = $1; }
 | "(" exp ")"           { $$ = $2; }
@@ -159,6 +165,8 @@ exp:
 | ifexp                 { $$ = $1; }
 | forexp                { $$ = $1; }
 | print %prec PRINT     { $$ = $1; }
+| varexp                { $$ = $1; }
+| assignment            { $$ = $1; }
 ;
 
 idexp:
@@ -180,21 +188,42 @@ explist:
 ;
 
 ifexp:
-  IF exp THEN exp ELSE exp FI  { $$ = new IfExprAST($2, $4, $6);}
+  IF exp THEN exp ELSE exp ENDKW  { $$ = new IfExprAST($2, $4, $6);}
 /* | IF exp THEN exp FI           { $$ = new IfExprAST($2, $4, nullptr); } */
 ;
 
 forexp:
-  FOR "id" "=" exp "," exp step IN exp ENDFOR { $$ = new ForExprAST($2, $4, $6, $7, $9); }
+  FOR "id" "=" exp "," exp step IN exp ENDKW { $$ = new ForExprAST($2, $4, $6, $7, $9); }
 ;
 
 step:
   "," exp   { $$ = $2; }
-| %empty    { $$ = new NumberExprAST(1.f); }
+| %empty    { $$ = new NumberExprAST(1.0); }
 ;
 
 print:
-  PRINT "(" exp ")"     { $$ = new PrintAST($3); }
+  PRINT "(" exp ")"       { $$ = new PrintAST($3); }
+;
+
+varexp:
+  VAR varlist IN exp ENDKW     { $$ = new VarExprAST($2, $4); }
+;
+
+varlist:
+  pair                        { std::vector<std::pair<std::string, ExprAST*>> args;
+                                args.push_back($1);
+                                $$ = args; }
+| pair "," varlist            { $3.insert($3.begin(), $1); $$ = $3; }
+;
+
+pair:
+  "id"                    { $$ = std::make_pair($1, new NumberExprAST(0.0)); }
+| "id" "=" exp            { $$ = std::make_pair($1, $3); }
+;
+
+assignment:
+  "id" "=" exp            { $$ = new BinaryExprAST('=', new VariableExprAST($1), $3); }
+;
 %%
 
 void

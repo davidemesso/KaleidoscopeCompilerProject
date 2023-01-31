@@ -6,11 +6,11 @@
 /// WhileExprAST - Classe che rappresenta la definizione di un while
 class WhileExprAST : public ExprAST {
 private:
-    ExprAST* End;
+    ExprAST* Cond;
     ExprAST* Body;
     
 public:
-    WhileExprAST(ExprAST* End, ExprAST* Body);
+    WhileExprAST(ExprAST* Cond, ExprAST* Body);
     void visit() override;
     Value *codegen(driver& drv) override;
 };

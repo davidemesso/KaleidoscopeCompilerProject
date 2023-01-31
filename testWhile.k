@@ -1,7 +1,7 @@
-def func(x)
-    while x < 10
+def func(x y)
+    while x < y
     in
-        x = x + 1   :
+        x = x + 1:
         print(x)    
     end
 ;
@@ -12,7 +12,7 @@ def main()
         while x < 10
         in
             print(x = x + 1)
-        end :
-        func(x)
+        end:
+        func(x-5, 12)
     end 
 ;

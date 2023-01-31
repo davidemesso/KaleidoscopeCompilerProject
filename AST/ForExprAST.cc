@@ -38,7 +38,7 @@ Value* ForExprAST::codegen(driver &drv)
 
 	BasicBlock* ForHeaderBB = BasicBlock::Create(*drv.context, "for.header");
 	BasicBlock* ForBodyBB   = BasicBlock::Create(*drv.context, "for.body");
-	BasicBlock* ForLatchBB  = BasicBlock::Create(*drv.context, "latch");
+	BasicBlock* ForLatchBB  = BasicBlock::Create(*drv.context, "for.latch");
 	BasicBlock* ExitBB      = BasicBlock::Create(*drv.context, "exit");
 
     Value* StartVal = Start->codegen(drv);
@@ -61,12 +61,12 @@ Value* ForExprAST::codegen(driver &drv)
 	if (!CondV)
 		return nullptr;
 
-	Value* EndCondition = builder->CreateFCmpONE(
+	Value* ContinueCondition = builder->CreateFCmpONE(
 		CondV,
 		ConstantFP::get(*drv.context, APFloat(0.)),
         "forCond"
 	);
-    builder->CreateCondBr(EndCondition, ForBodyBB, ExitBB);
+    builder->CreateCondBr(ContinueCondition, ForBodyBB, ExitBB);
     ForHeaderBB = builder->GetInsertBlock();
 
 

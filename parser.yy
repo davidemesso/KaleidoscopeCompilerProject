@@ -14,9 +14,7 @@
   class ExprAST;
   class driver;
   class FunctionAST;
-  class SeqAST;
   class PrototypeAST;
-  class IfExprAST;
 }
 
 // The parsing context.
@@ -41,6 +39,7 @@
 # include "AST/ForExprAST.hh"
 # include "AST/PrintAST.hh"
 # include "AST/VarExprAST.hh"
+# include "AST/WhileExprAST.hh"
 }
 
 %define api.token.prefix {TOK_}
@@ -74,6 +73,7 @@
   ENDKW      "end"
   PRINT      "print"
   VAR        "var"
+  WHILE      "while"
 ;
 
 %token <std::string> IDENTIFIER "id"
@@ -84,6 +84,7 @@
 %type <std::vector<ExprAST*>> explist
 %type <ExprAST*> ifexp
 %type <ExprAST*> forexp
+%type <ExprAST*> whilexp
 %type <ExprAST*> step
 %type <RootAST*> program
 %type <RootAST*> top
@@ -167,6 +168,7 @@ exp:
 | print %prec PRINT     { $$ = $1; }
 | varexp                { $$ = $1; }
 | assignment            { $$ = $1; }
+| whilexp               { $$ = $1; }
 ;
 
 idexp:
@@ -199,6 +201,10 @@ forexp:
 step:
   "," exp   { $$ = $2; }
 | %empty    { $$ = new NumberExprAST(1.0); }
+;
+
+whilexp:
+  WHILE exp IN exp ENDKW { $$ = new WhileExprAST($2, $4); }
 ;
 
 print:

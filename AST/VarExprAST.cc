@@ -1,7 +1,7 @@
 #include "VarExprAST.hh"
 #include "Utils/LogError.hh"
 
-/****************** Variable Expression TreeAST *******************/
+/****************** Var Expression TreeAST *******************/
 VarExprAST::VarExprAST(
 	std::vector<std::pair<std::string, ExprAST *>> VarNames,
 	ExprAST *Body

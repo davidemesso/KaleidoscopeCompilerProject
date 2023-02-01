@@ -2,8 +2,8 @@
 
 all: kfe
 
-kfe: driver.o parser.o scanner.o kfe.o ifExprAST.o seqAST.o functionAST.o prototypeAST.o exprAST.o numberExprAST.o variableExprAST.o binaryExprAST.o unaryExprAST.o callExprAST.o forExprAST.o printAST.o varExprAST.o whileExprAST.o
-	clang++ -o kfe driver.o parser.o scanner.o kfe.o ifExprAST.o seqAST.o functionAST.o exprAST.o numberExprAST.o prototypeAST.o variableExprAST.o binaryExprAST.o unaryExprAST.o callExprAST.o forExprAST.o printAST.o varExprAST.o whileExprAST.o `llvm-config --cxxflags --ldflags --libs --libfiles --system-libs` 
+kfe: driver.o parser.o scanner.o kfe.o ifExprAST.o seqAST.o functionAST.o prototypeAST.o exprAST.o numberExprAST.o variableExprAST.o binaryExprAST.o unaryExprAST.o callExprAST.o forExprAST.o printAST.o varExprAST.o whileExprAST.o arrayExprAST.o arrayAssignExprAST.o
+	clang++ -o kfe driver.o parser.o scanner.o kfe.o ifExprAST.o seqAST.o functionAST.o exprAST.o numberExprAST.o prototypeAST.o variableExprAST.o binaryExprAST.o unaryExprAST.o callExprAST.o forExprAST.o printAST.o varExprAST.o whileExprAST.o arrayExprAST.o  arrayAssignExprAST.o `llvm-config --cxxflags --ldflags --libs --libfiles --system-libs` 
 
 kfe.o: kfe.cc driver.hh ./AST/Utils/LogError.hh
 	clang++ -c kfe.cc -I/usr/lib/llvm-11/include -std=c++17 -fno-exceptions -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS
@@ -58,6 +58,12 @@ varExprAST.o: ./AST/VarExprAST.cc ./AST/VarExprAST.hh
 	
 whileExprAST.o: ./AST/WhileExprAST.cc ./AST/WhileExprAST.hh 
 	clang++ -c ./AST/WhileExprAST.cc -I/usr/lib/llvm-11/include -std=c++17 -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS 
+	
+arrayExprAST.o: ./AST/ArrayExprAST.cc ./AST/ArrayExprAST.hh 
+	clang++ -c ./AST/ArrayExprAST.cc -I/usr/lib/llvm-11/include -std=c++17 -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS 
+	
+arrayAssignExprAST.o: ./AST/ArrayAssignExprAST.cc ./AST/ArrayAssignExprAST.hh 
+	clang++ -c ./AST/ArrayAssignExprAST.cc -I/usr/lib/llvm-11/include -std=c++17 -D_GNU_SOURCE -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS 
 	
 parser.cc, parser.hh: parser.yy 
 	bison -o parser.cc parser.yy -Wcounterexamples

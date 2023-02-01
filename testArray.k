@@ -1,14 +1,14 @@
 def f(s)
     var array arrof 3, x = s
     in
-        array = 2:
-        print(x):
-        // same as array[0] = 2
-        print(array)
+        array = 20:
+        array[1] = 50:
+        print(array[1]):
+        print(array[0])
         // same as print(array[0])
     end
 ;
 
 def main()
-    f(3)
+    f(1)
 ;

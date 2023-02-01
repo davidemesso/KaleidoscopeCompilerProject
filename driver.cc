@@ -56,14 +56,19 @@ AllocaInst *CreateEntryBlockAlloca(
 	const Value* ArraySize
 )
 {
-	Value* ActualSize = (Value*)ArraySize;
-	if(!ArraySize)
-		ActualSize = ConstantFP::get(*drv.context, APFloat(0.0));
-
 	IRBuilder<> TmpB(
 		&TheFunction->getEntryBlock(),
 		TheFunction->getEntryBlock().begin()
 	);
+	
+	Value* ActualSize = (Value*)ArraySize;
+	if(!ArraySize)
+		return TmpB.CreateAlloca(
+			Type::getDoubleTy(*drv.context),
+			0,
+			VarName.c_str()
+		);
+
 
 	return TmpB.CreateAlloca(
 		Type::getDoubleTy(*drv.context), 

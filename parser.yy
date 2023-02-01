@@ -40,6 +40,8 @@
 # include "AST/PrintAST.hh"
 # include "AST/VarExprAST.hh"
 # include "AST/WhileExprAST.hh"
+# include "AST/ArrayExprAST.hh"
+# include "AST/ArrayAssignExprAST.hh"
 }
 
 %define api.token.prefix {TOK_}
@@ -239,7 +241,7 @@ pair:
 
 assignment:
   "id" "=" exp              { $$ = new BinaryExprAST('=', new VariableExprAST($1), $3); }
-| "id" "[" exp "]" "=" exp  // new ArrayAssignExprAST($1, $3, $5) che fa store di $5 sul GEP di $1 indice $3
+| "id" "[" exp "]" "=" exp  { $$ = new ArrayAssignExprAST($1, $3, $6); }
 ;
 
 arraydef:
@@ -247,7 +249,7 @@ arraydef:
 ;
 
 arrayexp:
-  "id" "[" exp "]"        // new ArrayExpAST($1, $3) che ritorna una load sul GEP di $1 indice $3
+  "id" "[" exp "]"          { $$ = new ArrayExprAST($1, $3); }
 ;
 %%
 

@@ -48,12 +48,6 @@ Value *VarExprAST::codegen(driver &drv)
 				"blocks"
 			);
 			Alloca = CreateEntryBlockAlloca(drv, TheFunction, VarName, blocks);
-			// Value* secondEl = drv.builder->CreateInBoundsGEP(
-			//     Type::getDoubleTy(*drv.context),
-			//     Alloca,
-			// 	   Constant::getIntegerValue(Type::getInt32Ty(*drv.context), APInt(32, 1, false))
-			// );
-			// drv.builder->CreateStore(ConstantFP::get(*drv.context, APFloat(2.0)), secondEl);
 		}
 		else
 		{

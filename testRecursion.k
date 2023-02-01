@@ -4,7 +4,7 @@ def fact(x)
         1
     else
         x * fact(x-1)
-    fi
+    end
 ;
 
 def main()

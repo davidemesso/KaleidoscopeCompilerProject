@@ -17,6 +17,7 @@ Value* PrintAST::codegen(driver &drv)
 	if(gettop())
 		return TopExpression(this, drv);
 
+    // C standard printf declaration
     auto CalleeF = drv.module->getOrInsertFunction(
         "printf",
         FunctionType::get(

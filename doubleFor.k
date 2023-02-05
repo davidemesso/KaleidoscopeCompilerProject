@@ -7,7 +7,7 @@ def main()
             j <= 8,
             1
         in
-            if j % 2 == 0 then print(j) else 0 end
+            if j % 2 != 0 then print(j) else 0 end
         end 
     end
 ;

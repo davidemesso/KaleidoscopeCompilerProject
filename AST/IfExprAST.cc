@@ -17,7 +17,7 @@ void IfExprAST::visit()
 		std::cout << " else ";
 		Else->visit();
 	}
-	std::cout << " fi";
+	std::cout << " end ";
 }
 
 Value* IfExprAST::codegen(driver &drv)
@@ -38,8 +38,6 @@ Value* IfExprAST::codegen(driver &drv)
 
 	Function *TheFunction = builder->GetInsertBlock()->getParent();
 
-	// Create blocks for the then and else cases.  Insert the 'then' block at the
-	// end of the function.
 	BasicBlock *thenBB  = BasicBlock::Create(*drv.context, "then", TheFunction);
 	BasicBlock *elseBB  = BasicBlock::Create(*drv.context, "else");
 	BasicBlock *mergeBB = BasicBlock::Create(*drv.context, "ifcond");
@@ -54,7 +52,6 @@ Value* IfExprAST::codegen(driver &drv)
 		return nullptr;
 
 	builder->CreateBr(mergeBB);
-	// Codegen of 'Then' can change the current block, update ThenBB for the PHI.
 	thenBB = builder->GetInsertBlock();
 
 	// ELSE
@@ -66,7 +63,6 @@ Value* IfExprAST::codegen(driver &drv)
 		return nullptr;
 
 	builder->CreateBr(mergeBB);
-	// codegen of 'Else' can change the current block, update ElseBB for the PHI.
 	elseBB = builder->GetInsertBlock();
 	
 	// MERGE

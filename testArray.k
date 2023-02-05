@@ -5,11 +5,12 @@ def f(s)
         in
             while i < s
             in
-                a[i] = i * (-3 + 2): // -3 + 2 = -1
+                a[i] = (i % 2) * (-3 - -2) * i: // -3 - -2 = -1
                 i = i+1
             end:
             for j = 0,
-                j < s
+                j <= s - 1
+                // 1
             in
                 print(a[j])
             end
@@ -22,8 +23,8 @@ def f(s)
 
 // For direct execution uncomment the main
 // Alternatively import f as extern in main.cc
-// def main()
-//     f(-2):
-//     f(5):
-//     f(50)
-// ;
+def main()
+    f(-2):
+    f(5):
+    f(50)
+;

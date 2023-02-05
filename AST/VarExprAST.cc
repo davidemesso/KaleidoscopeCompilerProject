@@ -40,6 +40,8 @@ Value *VarExprAST::codegen(driver &drv)
 			return nullptr;
 
 		AllocaInst *Alloca;
+
+		// IsSize is set if varexpr is an array initialization
 		if(Init->getIsSize())
 		{
 			Value* blocks = drv.builder->CreateFPToUI(
@@ -55,23 +57,17 @@ Value *VarExprAST::codegen(driver &drv)
 			drv.builder->CreateStore(InitVal, Alloca);
 		}
 
-		// Remember the old variable binding so that we can restore the binding when
-		// we unrecurse.
 		OldBindings.push_back(drv.NamedValues[VarName]);
 
-		// Remember this binding.
 		drv.NamedValues[VarName] = Alloca;
 	}
 
-	// Codegen the body, now that all vars are in scope.
 	Value *BodyVal = Body->codegen(drv);
 	if (!BodyVal)
 		return nullptr;
 
-	// Pop all our variables from scope.
 	for (unsigned i = 0, e = VarNames.size(); i != e; ++i)
 		drv.NamedValues[VarNames[i].first] = OldBindings[i];
 
-	// Return the body computation.
 	return BodyVal;
 };

@@ -29,7 +29,7 @@ Value *BinaryExprAST::codegen(driver& drv) {
 
   if (Op == '=') 
   {
-    VariableExprAST* LHSE = dynamic_cast<VariableExprAST *>(LHS);
+    VariableExprAST* LHSE = dynamic_cast<VariableExprAST*>(LHS);
     if (!LHSE)
     {
       LogErrorV("destination of '=' must be a variable");

@@ -107,6 +107,7 @@
 
 %right ":"
 %left "="
+%left "!"
 %left "<" ">" EQ NE LE GE
 %left "+" "-" "%"
 %left "*" "/"
@@ -163,12 +164,8 @@ exp:
 | idexp                 { $$ = $1; }
 | "(" exp ")"           { $$ = $2; }
 | "number"              { $$ = new NumberExprAST($1); }
-| "-" "number"          { $$ = new UnaryExprAST('-', new NumberExprAST($2)); }
-| "-" "(" exp ")"       { $$ = new UnaryExprAST('-', $3); }
-| "-" idexp             { $$ = new UnaryExprAST('-', $2); }
-| "!" "number"          { $$ = new UnaryExprAST('!', new NumberExprAST($2)); }
-| "!" "(" exp ")"       { $$ = new UnaryExprAST('!', $3); }
-| "!" idexp             { $$ = new UnaryExprAST('!', $2); }
+| "-" exp               { $$ = new UnaryExprAST('-', $2); }
+| "!" exp          { $$ = new UnaryExprAST('!', $2); }
 | exp ":" exp           { $$ = new BinaryExprAST(':', $1, $3); }
 | ifexp                 { $$ = $1; }
 | forexp                { $$ = $1; }

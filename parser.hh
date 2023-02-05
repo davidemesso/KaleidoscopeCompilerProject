@@ -1926,7 +1926,7 @@ switch (yykind)
 
 
     /// Stored state numbers (used for stacks).
-    typedef unsigned char state_type;
+    typedef signed char state_type;
 
     /// The arguments of the error message.
     int yy_syntax_error_arguments_ (const context& yyctx,
@@ -1982,7 +1982,7 @@ switch (yykind)
     // YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
     // positive, shift that token.  If negative, reduce the rule whose
     // number is the opposite.  If YYTABLE_NINF, syntax error.
-    static const short yytable_[];
+    static const signed char yytable_[];
 
     static const signed char yycheck_[];
 
@@ -2226,9 +2226,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 450,     ///< Last index in yytable_.
+      yylast_ = 395,     ///< Last index in yytable_.
       yynnts_ = 23,  ///< Number of nonterminal symbols.
-      yyfinal_ = 49 ///< Termination state number.
+      yyfinal_ = 44 ///< Termination state number.
     };
 
 

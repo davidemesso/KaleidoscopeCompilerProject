@@ -12,6 +12,7 @@ void WhileExprAST::visit()
     Cond->visit();
     std::cout << " in ";
     Body->visit();
+    std::cout << " end ";
 }
 
 Value* WhileExprAST::codegen(driver &drv)

@@ -7,13 +7,13 @@ def printFibonacciNumbers(n)
         then
             print(0)
         else
-            print(f1)   :
+            print(f1):
             for i = 1, 
                 i < n
             in
-                print(f2)       :
-                next = f1 + f2  :
-                f1 = f2         :
+                print(f2):
+                next = f1 + f2:
+                f1 = f2:
                 f2 = next
             end
         end
@@ -21,7 +21,7 @@ def printFibonacciNumbers(n)
 ;
 
 def main()
-    printFibonacciNumbers(20)  :
+    printFibonacciNumbers(800)  :
     printFibonacciNumbers(0)   :
     printFibonacciNumbers(-5)
 ;

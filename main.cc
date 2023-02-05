@@ -3,11 +3,11 @@
 
 extern "C" 
 {
-    double func(double x, double y);
+    double f(double x);
 }
 
 int main()
 {
-    func(1, 10);
-    return 0;
+    f(5);
+    f(50);
 }

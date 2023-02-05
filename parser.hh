@@ -653,6 +653,7 @@ namespace yy {
       // print
       // varexp
       // assignment
+      // arrayexp
       char dummy1[sizeof (ExprAST*)];
 
       // definition
@@ -670,6 +671,7 @@ namespace yy {
       char dummy5[sizeof (double)];
 
       // pair
+      // arraydef
       char dummy6[sizeof (std::pair<std::string,ExprAST*>)];
 
       // "id"
@@ -753,19 +755,22 @@ namespace yy {
     TOK_NOT = 273,                 // "!"
     TOK_CONCAT = 274,              // ":"
     TOK_ASSIGN = 275,              // "="
-    TOK_EXTERN = 276,              // "extern"
-    TOK_DEF = 277,                 // "def"
-    TOK_IF = 278,                  // "if"
-    TOK_THEN = 279,                // "then"
-    TOK_ELSE = 280,                // "else"
-    TOK_FOR = 281,                 // "for"
-    TOK_IN = 282,                  // "in"
-    TOK_ENDKW = 283,               // "end"
-    TOK_PRINT = 284,               // "print"
-    TOK_VAR = 285,                 // "var"
-    TOK_WHILE = 286,               // "while"
-    TOK_IDENTIFIER = 287,          // "id"
-    TOK_NUMBER = 288               // "number"
+    TOK_LSQUARE = 276,             // "["
+    TOK_RSQUARE = 277,             // "]"
+    TOK_EXTERN = 278,              // "extern"
+    TOK_DEF = 279,                 // "def"
+    TOK_IF = 280,                  // "if"
+    TOK_THEN = 281,                // "then"
+    TOK_ELSE = 282,                // "else"
+    TOK_FOR = 283,                 // "for"
+    TOK_IN = 284,                  // "in"
+    TOK_ENDKW = 285,               // "end"
+    TOK_PRINT = 286,               // "print"
+    TOK_VAR = 287,                 // "var"
+    TOK_WHILE = 288,               // "while"
+    TOK_ARROF = 289,               // "arrof"
+    TOK_IDENTIFIER = 290,          // "id"
+    TOK_NUMBER = 291               // "number"
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -782,7 +787,7 @@ namespace yy {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 34, ///< Number of tokens.
+        YYNTOKENS = 37, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // "end of file"
         S_YYerror = 1,                           // error
@@ -805,40 +810,45 @@ namespace yy {
         S_NOT = 18,                              // "!"
         S_CONCAT = 19,                           // ":"
         S_ASSIGN = 20,                           // "="
-        S_EXTERN = 21,                           // "extern"
-        S_DEF = 22,                              // "def"
-        S_IF = 23,                               // "if"
-        S_THEN = 24,                             // "then"
-        S_ELSE = 25,                             // "else"
-        S_FOR = 26,                              // "for"
-        S_IN = 27,                               // "in"
-        S_ENDKW = 28,                            // "end"
-        S_PRINT = 29,                            // "print"
-        S_VAR = 30,                              // "var"
-        S_WHILE = 31,                            // "while"
-        S_IDENTIFIER = 32,                       // "id"
-        S_NUMBER = 33,                           // "number"
-        S_YYACCEPT = 34,                         // $accept
-        S_startsymb = 35,                        // startsymb
-        S_program = 36,                          // program
-        S_top = 37,                              // top
-        S_definition = 38,                       // definition
-        S_external = 39,                         // external
-        S_proto = 40,                            // proto
-        S_idseq = 41,                            // idseq
-        S_exp = 42,                              // exp
-        S_idexp = 43,                            // idexp
-        S_optexp = 44,                           // optexp
-        S_explist = 45,                          // explist
-        S_ifexp = 46,                            // ifexp
-        S_forexp = 47,                           // forexp
-        S_step = 48,                             // step
-        S_whilexp = 49,                          // whilexp
-        S_print = 50,                            // print
-        S_varexp = 51,                           // varexp
-        S_varlist = 52,                          // varlist
-        S_pair = 53,                             // pair
-        S_assignment = 54                        // assignment
+        S_LSQUARE = 21,                          // "["
+        S_RSQUARE = 22,                          // "]"
+        S_EXTERN = 23,                           // "extern"
+        S_DEF = 24,                              // "def"
+        S_IF = 25,                               // "if"
+        S_THEN = 26,                             // "then"
+        S_ELSE = 27,                             // "else"
+        S_FOR = 28,                              // "for"
+        S_IN = 29,                               // "in"
+        S_ENDKW = 30,                            // "end"
+        S_PRINT = 31,                            // "print"
+        S_VAR = 32,                              // "var"
+        S_WHILE = 33,                            // "while"
+        S_ARROF = 34,                            // "arrof"
+        S_IDENTIFIER = 35,                       // "id"
+        S_NUMBER = 36,                           // "number"
+        S_YYACCEPT = 37,                         // $accept
+        S_startsymb = 38,                        // startsymb
+        S_program = 39,                          // program
+        S_top = 40,                              // top
+        S_definition = 41,                       // definition
+        S_external = 42,                         // external
+        S_proto = 43,                            // proto
+        S_idseq = 44,                            // idseq
+        S_exp = 45,                              // exp
+        S_idexp = 46,                            // idexp
+        S_optexp = 47,                           // optexp
+        S_explist = 48,                          // explist
+        S_ifexp = 49,                            // ifexp
+        S_forexp = 50,                           // forexp
+        S_step = 51,                             // step
+        S_whilexp = 52,                          // whilexp
+        S_print = 53,                            // print
+        S_varexp = 54,                           // varexp
+        S_varlist = 55,                          // varlist
+        S_pair = 56,                             // pair
+        S_assignment = 57,                       // assignment
+        S_arraydef = 58,                         // arraydef
+        S_arrayexp = 59                          // arrayexp
       };
     };
 
@@ -884,6 +894,7 @@ namespace yy {
       case symbol_kind::S_print: // print
       case symbol_kind::S_varexp: // varexp
       case symbol_kind::S_assignment: // assignment
+      case symbol_kind::S_arrayexp: // arrayexp
         value.move< ExprAST* > (std::move (that.value));
         break;
 
@@ -906,6 +917,7 @@ namespace yy {
         break;
 
       case symbol_kind::S_pair: // pair
+      case symbol_kind::S_arraydef: // arraydef
         value.move< std::pair<std::string,ExprAST*> > (std::move (that.value));
         break;
 
@@ -1120,6 +1132,7 @@ switch (yykind)
       case symbol_kind::S_print: // print
       case symbol_kind::S_varexp: // varexp
       case symbol_kind::S_assignment: // assignment
+      case symbol_kind::S_arrayexp: // arrayexp
         value.template destroy< ExprAST* > ();
         break;
 
@@ -1142,6 +1155,7 @@ switch (yykind)
         break;
 
       case symbol_kind::S_pair: // pair
+      case symbol_kind::S_arraydef: // arraydef
         value.template destroy< std::pair<std::string,ExprAST*> > ();
         break;
 
@@ -1257,7 +1271,7 @@ switch (yykind)
 #endif
       {
         YY_ASSERT (tok == token::TOK_END
-                   || (token::TOK_YYerror <= tok && tok <= token::TOK_WHILE));
+                   || (token::TOK_YYerror <= tok && tok <= token::TOK_ARROF));
       }
 #if 201103L <= YY_CPLUSPLUS
       symbol_type (int tok, double v, location_type l)
@@ -1645,6 +1659,36 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_LSQUARE (location_type l)
+      {
+        return symbol_type (token::TOK_LSQUARE, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_LSQUARE (const location_type& l)
+      {
+        return symbol_type (token::TOK_LSQUARE, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_RSQUARE (location_type l)
+      {
+        return symbol_type (token::TOK_RSQUARE, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_RSQUARE (const location_type& l)
+      {
+        return symbol_type (token::TOK_RSQUARE, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_EXTERN (location_type l)
       {
         return symbol_type (token::TOK_EXTERN, std::move (l));
@@ -1810,6 +1854,21 @@ switch (yykind)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_ARROF (location_type l)
+      {
+        return symbol_type (token::TOK_ARROF, std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_ARROF (const location_type& l)
+      {
+        return symbol_type (token::TOK_ARROF, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_IDENTIFIER (std::string v, location_type l)
       {
         return symbol_type (token::TOK_IDENTIFIER, std::move (v), std::move (l));
@@ -1867,7 +1926,7 @@ switch (yykind)
 
 
     /// Stored state numbers (used for stacks).
-    typedef signed char state_type;
+    typedef unsigned char state_type;
 
     /// The arguments of the error message.
     int yy_syntax_error_arguments_ (const context& yyctx,
@@ -1923,7 +1982,7 @@ switch (yykind)
     // YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
     // positive, shift that token.  If negative, reduce the rule whose
     // number is the opposite.  If YYTABLE_NINF, syntax error.
-    static const signed char yytable_[];
+    static const short yytable_[];
 
     static const signed char yycheck_[];
 
@@ -2167,9 +2226,9 @@ switch (yykind)
     /// Constants.
     enum
     {
-      yylast_ = 391,     ///< Last index in yytable_.
-      yynnts_ = 21,  ///< Number of nonterminal symbols.
-      yyfinal_ = 46 ///< Termination state number.
+      yylast_ = 450,     ///< Last index in yytable_.
+      yynnts_ = 23,  ///< Number of nonterminal symbols.
+      yyfinal_ = 49 ///< Termination state number.
     };
 
 
@@ -2216,10 +2275,11 @@ switch (yykind)
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30,    31,    32,    33
+      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
+      35,    36
     };
     // Last valid token kind.
-    const int code_max = 288;
+    const int code_max = 291;
 
     if (t <= 0)
       return symbol_kind::S_YYEOF;
@@ -2247,6 +2307,7 @@ switch (yykind)
       case symbol_kind::S_print: // print
       case symbol_kind::S_varexp: // varexp
       case symbol_kind::S_assignment: // assignment
+      case symbol_kind::S_arrayexp: // arrayexp
         value.copy< ExprAST* > (YY_MOVE (that.value));
         break;
 
@@ -2269,6 +2330,7 @@ switch (yykind)
         break;
 
       case symbol_kind::S_pair: // pair
+      case symbol_kind::S_arraydef: // arraydef
         value.copy< std::pair<std::string,ExprAST*> > (YY_MOVE (that.value));
         break;
 
@@ -2327,6 +2389,7 @@ switch (yykind)
       case symbol_kind::S_print: // print
       case symbol_kind::S_varexp: // varexp
       case symbol_kind::S_assignment: // assignment
+      case symbol_kind::S_arrayexp: // arrayexp
         value.move< ExprAST* > (YY_MOVE (s.value));
         break;
 
@@ -2349,6 +2412,7 @@ switch (yykind)
         break;
 
       case symbol_kind::S_pair: // pair
+      case symbol_kind::S_arraydef: // arraydef
         value.move< std::pair<std::string,ExprAST*> > (YY_MOVE (s.value));
         break;
 
@@ -2431,7 +2495,7 @@ switch (yykind)
   }
 
 } // yy
-#line 2435 "parser.hh"
+#line 2499 "parser.hh"
 
 
 

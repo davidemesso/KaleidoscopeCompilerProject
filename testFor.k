@@ -3,7 +3,7 @@ def allMultiplesUntil(x y)
         i < y,
         x
     in 
-        if i <= 5 then print(i) else 0 fi
+        if i <= 5 then print(i) else 0 end
     end
 ;
 

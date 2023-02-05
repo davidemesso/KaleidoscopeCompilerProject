@@ -1,8 +1,13 @@
 #include <iostream>
 #include <cstdio>
 
-double cond(double x)
+extern "C" 
 {
-    std::cout << x << std::endl;
-    return x;
+    double f(double x);
+}
+
+int main()
+{
+    f(5);
+    f(50);
 }

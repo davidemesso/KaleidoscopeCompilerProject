@@ -30,6 +30,7 @@ fpnum   [0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
 fixnum  (0|[1-9][0-9]*)\.?[0-9]*
 num     {fpnum}|{fixnum}
 blank   [ \t\r]
+comment \/\/.*
 
 %{
   // Code run each time a pattern is matched.
@@ -43,6 +44,7 @@ blank   [ \t\r]
   loc.step ();
 %}
 {blank}+   loc.step ();
+{comment}  loc.step ();
 [\n]+      loc.lines (yyleng); loc.step ();
 
 "-"      return yy::parser::make_MINUS     (loc);
@@ -63,6 +65,8 @@ blank   [ \t\r]
 "=="     return yy::parser::make_EQ        (loc);
 "!="     return yy::parser::make_NE        (loc);
 "="      return yy::parser::make_ASSIGN    (loc);
+"["      return yy::parser::make_LSQUARE   (loc);
+"]"      return yy::parser::make_RSQUARE   (loc);
 
 {num}      {
   errno = 0;
@@ -103,6 +107,8 @@ yy::parser::symbol_type check_keywords(std::string lexeme, yy::location& loc)  {
      return yy::parser::make_VAR(loc);
    else if (lexeme == "while")
      return yy::parser::make_WHILE(loc);
+   else if (lexeme == "arrof")
+     return yy::parser::make_ARROF(loc);
    else
      return yy::parser::make_IDENTIFIER (yytext, loc);
 }

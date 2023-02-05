@@ -22,9 +22,14 @@ Value *VariableExprAST::codegen(driver &drv)
   auto *V = drv.NamedValues[Name];
   if (!V)
     LogErrorV(Name + " Variabile non definita");
+
+  if(V->isArrayAllocation())
+    return V;
+  
   return drv.builder->CreateLoad(
     V->getAllocatedType(), 
     V, 
     Name.c_str()
   );
+
 };

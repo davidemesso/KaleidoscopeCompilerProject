@@ -52,17 +52,27 @@ Value *TopExpression(ExprAST *E, driver &drv)
 AllocaInst *CreateEntryBlockAlloca(
 	driver& drv,
 	Function *TheFunction,
-	const std::string &VarName
+	const std::string &VarName,
+	const Value* ArraySize
 )
 {
-	IRBuilder TmpB(
+	IRBuilder<> TmpB(
 		&TheFunction->getEntryBlock(),
 		TheFunction->getEntryBlock().begin()
 	);
+	
+	Value* ActualSize = (Value*)ArraySize;
+	if(!ArraySize)
+		return TmpB.CreateAlloca(
+			Type::getDoubleTy(*drv.context),
+			0,
+			VarName.c_str()
+		);
+
 
 	return TmpB.CreateAlloca(
 		Type::getDoubleTy(*drv.context), 
-		0, 
+		ActualSize, 
 		VarName.c_str()
 	);
 }

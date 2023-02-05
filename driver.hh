@@ -68,6 +68,12 @@ public:
 };
 
 Value* TopExpression(ExprAST* E, driver& drv);
-AllocaInst *CreateEntryBlockAlloca(driver& drv, Function *TheFunction, const std::string &VarName);
+
+AllocaInst *CreateEntryBlockAlloca(
+  driver& drv, 
+  Function *TheFunction, 
+  const std::string &VarName,
+  const Value* ArraySize = (llvm::Value *)nullptr
+);
 
 #endif // ! DRIVER_HH

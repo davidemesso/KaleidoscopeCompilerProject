@@ -10,7 +10,11 @@ protected:
 public:
   virtual ~ExprAST() {};
   void toggle();
+  void setIsSize();
+  bool getIsSize();
   bool gettop();
+private:
+  bool isSize = false;
 };
 
 #endif // !EXPR_AST_HH

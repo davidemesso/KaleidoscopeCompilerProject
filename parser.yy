@@ -40,6 +40,8 @@
 # include "AST/PrintAST.hh"
 # include "AST/VarExprAST.hh"
 # include "AST/WhileExprAST.hh"
+# include "AST/ArrayExprAST.hh"
+# include "AST/ArrayAssignExprAST.hh"
 }
 
 %define api.token.prefix {TOK_}
@@ -63,6 +65,8 @@
   NOT        "!"
   CONCAT     ":"
   ASSIGN     "="
+  LSQUARE    "["
+  RSQUARE    "]"
   EXTERN     "extern"
   DEF        "def"
   IF         "if"
@@ -74,6 +78,7 @@
   PRINT      "print"
   VAR        "var"
   WHILE      "while"
+  ARROF      "arrof"
 ;
 
 %token <std::string> IDENTIFIER "id"
@@ -95,7 +100,9 @@
 %type <ExprAST*> print
 %type <ExprAST*> varexp
 %type <ExprAST*> assignment
+%type <ExprAST*> arrayexp
 %type <std::pair<std::string,ExprAST*>> pair
+%type <std::pair<std::string,ExprAST*>> arraydef
 %type <std::vector<std::pair<std::string, ExprAST*>>> varlist
 
 %right ":"
@@ -169,6 +176,7 @@ exp:
 | varexp                { $$ = $1; }
 | assignment            { $$ = $1; }
 | whilexp               { $$ = $1; }
+| arrayexp              { $$ = $1; }
 ;
 
 idexp:
@@ -191,7 +199,7 @@ explist:
 
 ifexp:
   IF exp THEN exp ELSE exp ENDKW  { $$ = new IfExprAST($2, $4, $6);}
-/* | IF exp THEN exp FI           { $$ = new IfExprAST($2, $4, nullptr); } */
+/* | IF exp THEN exp ENDKW        { $$ = new IfExprAST($2, $4, nullptr); } */
 ;
 
 forexp:
@@ -220,6 +228,10 @@ varlist:
                                 args.push_back($1);
                                 $$ = args; }
 | pair "," varlist            { $3.insert($3.begin(), $1); $$ = $3; }
+| arraydef                    { std::vector<std::pair<std::string, ExprAST*>> args;
+                                args.push_back($1);
+                                $$ = args; }
+| arraydef "," varlist        { $3.insert($3.begin(), $1); $$ = $3; }
 ;
 
 pair:
@@ -228,7 +240,16 @@ pair:
 ;
 
 assignment:
-  "id" "=" exp            { $$ = new BinaryExprAST('=', new VariableExprAST($1), $3); }
+  "id" "=" exp              { $$ = new BinaryExprAST('=', new VariableExprAST($1), $3); }
+| "id" "[" exp "]" "=" exp  { $$ = new ArrayAssignExprAST($1, $3, $6); }
+;
+
+arraydef:
+  "id" ARROF exp            { $$ = std::make_pair($1, $3); $3->setIsSize(); }
+;
+
+arrayexp:
+  "id" "[" exp "]"          { $$ = new ArrayExprAST($1, $3); }
 ;
 %%
 

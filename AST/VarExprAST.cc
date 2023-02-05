@@ -39,8 +39,21 @@ Value *VarExprAST::codegen(driver &drv)
 		if (!InitVal)
 			return nullptr;
 
-		AllocaInst *Alloca = CreateEntryBlockAlloca(drv, TheFunction, VarName);
-		drv.builder->CreateStore(InitVal, Alloca);
+		AllocaInst *Alloca;
+		if(Init->getIsSize())
+		{
+			Value* blocks = drv.builder->CreateFPToUI(
+				InitVal, 
+				Type::getInt32Ty(*drv.context), 
+				"blocks"
+			);
+			Alloca = CreateEntryBlockAlloca(drv, TheFunction, VarName, blocks);
+		}
+		else
+		{
+			Alloca = CreateEntryBlockAlloca(drv, TheFunction, VarName);
+			drv.builder->CreateStore(InitVal, Alloca);
+		}
 
 		// Remember the old variable binding so that we can restore the binding when
 		// we unrecurse.
